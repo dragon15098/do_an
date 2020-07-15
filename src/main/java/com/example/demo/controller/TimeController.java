@@ -16,6 +16,6 @@ public class TimeController {
     @ResponseStatus(HttpStatus.OK)
     public String getCurrentTime() {
 
-        return Instant.now().toString();
+        return "Instant.now().toString()";
     }
 }
