@@ -52,8 +52,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             Authentication authResult) throws IOException {
         User user = (User) authResult.getPrincipal();
         String token = tokenProvider.generateToken(user);
-
-        LoginResponse loginResponse = new LoginResponse(token);
+        LoginResponse loginResponse = new LoginResponse(token, user);
         PrintWriter writer = response.getWriter();
         writer.write(objectMapper.writeValueAsString(loginResponse));
         writer.close();
