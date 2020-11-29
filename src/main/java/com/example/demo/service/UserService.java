@@ -9,4 +9,6 @@ public interface UserService {
     User createUser(User userDTO);
     List<User> getAllUser();
     UserDTO getDetail(Long id);
+
+    List<UserDTO> getAllIntruder();
 }

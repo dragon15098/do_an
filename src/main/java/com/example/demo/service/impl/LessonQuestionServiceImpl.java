@@ -21,7 +21,7 @@ import java.util.stream.IntStream;
 public class LessonQuestionServiceImpl implements LessonQuestionService {
     public final LessonQuestionRepository lessonQuestionRepository;
     public final LessonAnswerService lessonAnswerService;
-    public final UserCourseService userCourseService;
+//    public final UserCourseService userCourseService;
 
     @Override
     public List<LessonQuestionDTO> getLessonQuestion(Long lessonId) {
@@ -64,12 +64,12 @@ public class LessonQuestionServiceImpl implements LessonQuestionService {
         });
 
         // if all true -> move user to next lesson
-        if (passed.get()) {
-            UserCourseDTO userCourse = userCourseService.getUserCourseByUserCourseId(userCourseId);
-            if (userCourse.getCurrentLesson().getId().equals(lessonId)) {
-                userCourseService.goToNextLesson(userCourse);
-            }
-        }
+//        if (passed.get()) {
+//            UserCourseDTO userCourse = userCourseService.getUserCourseByUserCourseId(userCourseId);
+//            if (userCourse.getCurrentLesson().getId().equals(lessonId)) {
+//                userCourseService.goToNextLesson(userCourse);
+//            }
+//        }
 
         // set result for response
         answerResult.setLessonQuestions(lessonQuestions);

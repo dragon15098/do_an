@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.model.InstructorDetail;
 import com.example.demo.model.User;
+import com.example.demo.model.dto.InstructorDetailDTO;
+import com.example.demo.model.dto.UserDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

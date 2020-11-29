@@ -42,7 +42,7 @@ public class FileController {
     }
 
     @PostMapping("/upload")
-    public void upload(@RequestParam("file") MultipartFile file) {
-        fileService.uploadFile(file);
+    public ResponseEntity<String> upload(@RequestParam("file") MultipartFile file) {
+        return new ResponseEntity<>(fileService.uploadFile(file), HttpStatus.OK);
     }
 }

@@ -10,10 +10,11 @@ import java.util.Optional;
 public interface CourseService {
     List<Course> getAll();
 
-    Course addCourse(Course course);
+    CourseDTO addCourse(CourseDTO course);
 
     List<CourseDTO> getCourseCreateByUserId(Long instructorId);
 
     CourseDTO getCourseById(Long id);
 
+    CourseDTO updateCourse(CourseDTO courseDTO);
 }

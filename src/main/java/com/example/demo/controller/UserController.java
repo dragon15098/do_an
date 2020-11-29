@@ -53,7 +53,10 @@ public class UserController {
         } catch (Exception ignored) {
         }
         return new ResponseEntity<>(new UserDTO(), HttpStatus.OK);
+    }
 
-
+    @GetMapping("/instructor")
+    public ResponseEntity<List<UserDTO>> getAllIntruder() {
+        return new ResponseEntity<>(userService.getAllIntruder(), HttpStatus.OK);
     }
 }

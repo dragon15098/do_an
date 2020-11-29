@@ -34,6 +34,7 @@ public class UserCourse extends BaseModel {
 
     private int process;
 
+
     public enum UserCourseStatus {
         INCOMPLETE, COMPLETE
     }

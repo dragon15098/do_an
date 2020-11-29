@@ -1,10 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.UserCourse;
-import com.example.demo.model.dto.LessonDTO;
-import com.example.demo.model.dto.QuizDTO;
-import com.example.demo.model.dto.SectionDTO;
-import com.example.demo.model.dto.UserCourseDTO;
+import com.example.demo.model.dto.*;
 import com.example.demo.repository.UserCourseRepository;
 import com.example.demo.service.CourseService;
 import com.example.demo.service.LessonService;
@@ -45,7 +42,7 @@ public class UserCourseServiceImpl implements UserCourseService {
             Long userId = Long.parseLong(auth.getPrincipal().toString());
             return userCourseRepository.getAllUserCourseByUserId(userId).stream().map(tuple -> {
                 UserCourseDTO userCourse = tupleToUserCourse(tuple);
-                userCourse.setCurrentLesson(lessonService.getLessonDetailById((Long) tuple.get("currentLessonId")));
+                userCourse.setCurrentLesson(lessonService.getLessonById((Long) tuple.get("currentLessonId")));
                 return userCourse;
             }).collect(Collectors.toList());
         } catch (Exception e) {
@@ -128,6 +125,42 @@ public class UserCourseServiceImpl implements UserCourseService {
         }
         userCourseRepository.save(entity);
         return true;
+    }
+
+    @Override
+    public UserCourseDTO getUserCourseByCourseId(Long courseId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            Long userId = Long.parseLong(auth.getPrincipal().toString());
+            return userCourseRepository.getDetailByCourseIdAndUserId(courseId, userId).stream().map(tuple -> {
+                UserCourseDTO userCourse = new UserCourseDTO();
+                // create course
+                CourseDTO course = new CourseDTO();
+                course.setId((Long) tuple.get("courseId"));
+
+                userCourse.setId((Long) tuple.get("id"));
+                userCourse.setCourse(course);
+
+                Long lessonId = (Long) tuple.get("currentLessonId");
+                if (lessonId != null) {
+                    LessonDTO lesson = new LessonDTO();
+                    lesson.setId(lessonId);
+                    userCourse.setCurrentLesson(lesson);
+                }
+                Long quizId = (Long) tuple.get("currentQuizId");
+                if (quizId != null) {
+                    QuizDTO quiz = new QuizDTO();
+                    quiz.setId(quizId);
+                    userCourse.setCurrentQuiz(quiz);
+                }
+
+                userCourse.setProcess((Integer) tuple.get("process"));
+                return userCourse;
+            }).findFirst().orElse(new UserCourseDTO());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new UserCourseDTO();
     }
 
     private Long[] getNextId(List<Object> objects, int i) {

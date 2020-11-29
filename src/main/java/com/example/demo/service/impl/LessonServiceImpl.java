@@ -1,7 +1,9 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.dto.LessonDTO;
+import com.example.demo.model.dto.LessonQuestionDTO;
 import com.example.demo.repository.LessonRepository;
+import com.example.demo.service.LessonQuestionService;
 import com.example.demo.service.LessonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LessonServiceImpl implements LessonService {
     private final LessonRepository lessonRepository;
+    private final LessonQuestionService lessonQuestionService;
 
     @Override
     public List<LessonDTO> getAllLessonBySectionId(Long sectionId) {
@@ -27,6 +30,23 @@ public class LessonServiceImpl implements LessonService {
 
     @Override
     public LessonDTO getLessonDetailById(Long lessonId) {
+        Optional<LessonDTO> result = lessonRepository.findLessonById(lessonId)
+                .stream()
+                .map(tuple -> {
+                    LessonDTO lessonDTO = tupleToLessonDTO(tuple);
+                    lessonDTO.setLessonQuestions(getLessonQuestion(lessonDTO));
+                    return lessonDTO;
+                })
+                .findFirst();
+        return result.orElse(new LessonDTO());
+    }
+
+    private List<LessonQuestionDTO> getLessonQuestion(LessonDTO lessonDTO) {
+        return lessonQuestionService.getLessonQuestion(lessonDTO.getId());
+    }
+
+    @Override
+    public LessonDTO getLessonById(Long lessonId) {
         Optional<LessonDTO> result = lessonRepository.findLessonById(lessonId)
                 .stream()
                 .map(this::tupleToLessonDTO)

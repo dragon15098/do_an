@@ -63,7 +63,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void uploadFile(MultipartFile file) {
+    public String uploadFile(MultipartFile file) {
         if (file.getOriginalFilename() != null) {
             Path path = fileStorageLocation.resolve(file.getOriginalFilename());
             try {
@@ -73,7 +73,9 @@ public class FileServiceImpl implements FileService {
                 System.out.println(e.getMessage());
                 throw new RuntimeException("Problemas na tentativa de salvar file.", e);
             }
+            return file.getOriginalFilename();
         }
+        return "";
     }
 
     @Override

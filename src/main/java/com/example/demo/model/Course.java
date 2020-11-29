@@ -19,9 +19,10 @@ public class Course extends BaseModel {
     private String imageDescriptionLink;
     private Float rating;
     private Integer ratingCount;
-    private Long  instructorId;
+    private Long instructorId;
+    private Long categoryId;
 
-    @JsonFormat(pattern="MMM dd, yyyy hh:mm:ss a")
+    @JsonFormat(pattern = "MMM dd, yyyy hh:mm:ss a")
     private Date createTime;
 
     @Enumerated(EnumType.STRING)
@@ -32,7 +33,7 @@ public class Course extends BaseModel {
     private Long commentCount;
 
     public enum CourseStatus {
-        APPROVED
+        WAIT, APPROVED
     }
 
 }

@@ -13,4 +13,6 @@ public interface UserCourseService {
     UserCourseDTO getUserCourseByUserCourseId(Long userCourseId);
 
     boolean goToNextLesson(UserCourseDTO userCourse);
+
+    UserCourseDTO getUserCourseByCourseId(Long courseId);
 }

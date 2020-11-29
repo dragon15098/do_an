@@ -14,7 +14,7 @@ public class QuizQuestionDTO extends BaseDTO {
     private QuizDTO quiz;
     private List<QuizAnswerDTO> quizAnswers;
     private QuizQuestionStatus quizQuestionStatus = QuizQuestionStatus.NOT_ANSWERED;
-
+    private int correctQuestionPosition;
     public enum QuizQuestionStatus {
         ERROR, SUCCESS, NOT_ANSWERED
     }

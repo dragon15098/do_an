@@ -10,5 +10,7 @@ public interface LessonService {
 
     LessonDTO getLessonDetailById(Long lessonId);
 
+    LessonDTO getLessonById(Long lessonId);
+
     LessonDTO getFistLessonIdByCourseId(Long courseId);
 }

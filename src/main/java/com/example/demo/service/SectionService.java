@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface SectionService {
     List<SectionDTO> getCourseSection(Long courseId);
+
+    SectionDTO getSectionDetail(Long sectionId);
 }

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -27,9 +28,15 @@ public class CourseController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Course> createCourse(@RequestBody Course course) {
-        course = courseService.addCourse(course);
-        return new ResponseEntity<>(course, HttpStatus.OK);
+    public ResponseEntity<CourseDTO> createCourse(@RequestBody CourseDTO courseDTO) {
+        courseDTO = courseService.addCourse(courseDTO);
+        return new ResponseEntity<>(courseDTO, HttpStatus.OK);
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<CourseDTO> updateCourse(@RequestBody CourseDTO courseDTO) {
+        courseDTO = courseService.updateCourse(courseDTO);
+        return new ResponseEntity<>(courseDTO, HttpStatus.OK);
     }
 
     @GetMapping("/create_by/{id}")
@@ -48,5 +55,8 @@ public class CourseController {
         return new ResponseEntity<>(courseService.getAll(), HttpStatus.OK);
     }
 
-
+    @GetMapping("/get_course_type_1")
+    public ResponseEntity<List<Course>> getCourseTypeOne() {
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+    }
 }

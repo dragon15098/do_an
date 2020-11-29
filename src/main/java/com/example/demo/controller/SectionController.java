@@ -1,8 +1,5 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.InstructorDetail;
-import com.example.demo.model.Section;
-import com.example.demo.model.User;
 import com.example.demo.model.dto.SectionDTO;
 import com.example.demo.service.SectionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -22,8 +18,16 @@ public class SectionController {
     @Autowired
     SectionService sectionService;
 
-    @GetMapping("/get_course_section/{id}")
+
+    /*
+       return all section detail(quiz and lesson)
+     */
+    @GetMapping("/get_course_section/{id}") 
     public ResponseEntity<List<SectionDTO>> getCourseSection(@PathVariable Long id) {
         return new ResponseEntity<>(sectionService.getCourseSection(id), HttpStatus.OK);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<SectionDTO> getSectionDetail(@PathVariable Long id) {
+        return new ResponseEntity<>(sectionService.getSectionDetail(id), HttpStatus.OK);
     }
 }

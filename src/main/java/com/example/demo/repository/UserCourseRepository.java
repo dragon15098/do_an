@@ -1,8 +1,6 @@
 package com.example.demo.repository;
 
-import com.example.demo.model.User;
 import com.example.demo.model.UserCourse;
-import com.example.demo.model.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -41,4 +39,14 @@ public interface UserCourseRepository extends JpaRepository<UserCourse, Long>, J
             " FROM UserCourse uc" +
             " WHERE uc.id = :userCourseId")
     List<Tuple> getUserCourseById(@Param("userCourseId") Long userCourseId);
+
+    @Query(value = " SELECT  uc.id as id, " +
+            "uc.userId as userId, " +
+            "uc.courseId as courseId, " +
+            "uc.process as process, " +
+            "uc.currentLessonId as currentLessonId, " +
+            "uc.currentQuizId as currentQuizId " +
+            " FROM UserCourse uc" +
+            " WHERE uc.userId = :userId AND uc.courseId = :courseId")
+    List<Tuple> getDetailByCourseIdAndUserId(@Param("courseId") Long courseId, @Param("userId") Long userId);
 }

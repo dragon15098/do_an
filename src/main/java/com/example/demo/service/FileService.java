@@ -12,7 +12,7 @@ public interface FileService {
 
     HttpHeaders loadHttpHeaders(Resource resource) throws IOException;
 
-    void uploadFile(MultipartFile file);
+    String uploadFile(MultipartFile file);
 
     ResponseEntity<byte[]> prepareContent(String fileName, String fileType, String range);
 }

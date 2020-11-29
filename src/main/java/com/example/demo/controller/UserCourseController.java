@@ -29,4 +29,10 @@ public class UserCourseController {
         List<UserCourseDTO> userCourses = userCourseService.getAllByUser();
         return new ResponseEntity<>(userCourses, HttpStatus.OK);
     }
+
+    @GetMapping("/get/{courseId}")
+    public ResponseEntity<UserCourseDTO> getUserCourseByCourseId(@PathVariable("courseId") Long courseId) {
+        UserCourseDTO userCourse = userCourseService.getUserCourseByCourseId(courseId);
+        return new ResponseEntity<>(userCourse, HttpStatus.OK);
+    }
 }

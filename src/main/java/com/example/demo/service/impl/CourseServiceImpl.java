@@ -1,16 +1,23 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.Course;
+import com.example.demo.model.Section;
 import com.example.demo.model.dto.CourseDTO;
 import com.example.demo.model.dto.LessonDTO;
+import com.example.demo.model.dto.SectionDTO;
+import com.example.demo.model.helper.CourseHelper;
+import com.example.demo.model.helper.SectionHelper;
 import com.example.demo.repository.CourseRepository;
+import com.example.demo.repository.SectionRepository;
 import com.example.demo.service.CourseService;
 import com.example.demo.service.LessonService;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Cache;
 import javax.persistence.Tuple;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +27,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
+    private final SectionRepository sectionRepository;
     private final UserService userService;
 
     @Override
@@ -28,9 +36,30 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Course addCourse(Course course) {
+    public CourseDTO addCourse(CourseDTO courseDTO) {
+        Course course = createCourse(courseDTO);
+        courseDTO.setId(course.getId());
+        createSections(courseDTO);
+        return courseDTO;
+    }
+
+    private Course createCourse(CourseDTO courseDTO) {
+        CourseHelper courseHelper = new CourseHelper(courseDTO);
+        Course course = courseHelper.courseDTOToCourse();
+        course.setStatus(Course.CourseStatus.WAIT);
+        course.setCreateTime(new Date());
         course = courseRepository.save(course);
         return course;
+    }
+
+    private void createSections(CourseDTO course) {
+        for (SectionDTO sectionDTO : course.getSections()) {
+            SectionHelper sectionHelper = new SectionHelper(sectionDTO);
+            Section section = sectionHelper.sectionDTOToSection();
+            section.setCourseId(course.getId());
+            section = sectionRepository.save(section);
+            sectionDTO.setId(section.getId());
+        }
     }
 
     @Override
@@ -45,6 +74,26 @@ public class CourseServiceImpl implements CourseService {
             return getInstructorDetail(course, tuple);
         }).findFirst();
         return first.orElse(new CourseDTO());
+    }
+
+    @Override
+    public CourseDTO updateCourse(CourseDTO courseDTO) {
+        CourseHelper courseHelper = new CourseHelper(courseDTO);
+        Course course = courseHelper.courseDTOToCourse();
+        courseRepository.save(course);
+        updateSections(courseDTO);
+//        course = courseRepository.save(course);
+        return courseDTO;
+    }
+
+    private void updateSections(CourseDTO courseDTO) {
+        courseDTO.getSections().forEach(sectionDTO -> {
+            SectionHelper sectionHelper = new SectionHelper(sectionDTO);
+            Section section = sectionHelper.sectionDTOToSection();
+            section.setCourseId(courseDTO.getId());
+            section = sectionRepository.save(section);
+            sectionDTO.setId(section.getId());
+        });
     }
 
     private CourseDTO tupleToCourseDTO(Tuple tuple) {

@@ -20,4 +20,14 @@ public interface SectionRepository extends JpaRepository<Section, Long>, JpaSpec
             " LEFT JOIN Quiz q ON q.id = s.quizId " +
             " WHERE s.courseId = :courseId ")
     List<Tuple> getAllSectionByCourseId(Long courseId);
+
+    @Query(value = " SELECT  s.id as id, " +
+            "s.sectionTitle as sectionTitle, " +
+            "s.quizId as quizId, " +
+            "s.courseId as courseId, " +
+            "q.quizTitle as quizTitle " +
+            " FROM Section s " +
+            " LEFT JOIN Quiz q ON q.id = s.quizId " +
+            " WHERE s.id = :sectionId ")
+    List<Tuple> getSectionBySectionId(Long sectionId);
 }

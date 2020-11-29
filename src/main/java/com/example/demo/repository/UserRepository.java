@@ -25,4 +25,17 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
                     " FROM User user" +
                     " WHERE user.id = :userId ")
     List<Tuple> getUserDetail(@Param("userId") Long userId);
+
+    @Query(value = " SELECT  user.id as id, " +
+                        "user.username as username, " +
+                        "user.firstName as firstName, " +
+                        "user.lastName as lastName, " +
+                        "user.email as email, " +
+                        "user.phoneNumber as phoneNumber, " +
+                        "user.instructorDetailId as instructorDetailId, " +
+                        "user.studentDetailId as studentDetailId " +
+                    " FROM User user" +
+                    " WHERE user.instructorDetailId is not null")
+    List<Tuple> getAllIntruder();
+
 }

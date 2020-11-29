@@ -1,6 +1,8 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.User;
+import com.example.demo.model.dto.InstructorDetailDTO;
+import com.example.demo.model.dto.StudentDetailDTO;
 import com.example.demo.model.dto.UserDTO;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.InstructorDetailService;
@@ -10,8 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Tuple;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,18 +42,48 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getDetail(Long id) {
-        Optional<UserDTO> user = userRepository.getUserDetail(id).stream().map(tuple -> {
-            UserDTO userDTO = new UserDTO();
-            userDTO.setId((Long) tuple.get("id"));
-            userDTO.setUsername((String) tuple.get("username"));
-            userDTO.setFirstName((String) tuple.get("firstName"));
-            userDTO.setLastName((String) tuple.get("lastName"));
-            userDTO.setEmail((String) tuple.get("email"));
-            userDTO.setPhoneNumber((String) tuple.get("phoneNumber"));
-            userDTO.setInstructorDetail(instructorDetailService.getInstructorDetail((Long) tuple.get("instructorDetailId")));
-            userDTO.setStudentDetail(studentDetailService.getDetailById((Long) tuple.get("studentDetailId")));
-            return userDTO;
-        }).findFirst();
-        return user.orElse(new UserDTO());
+        return userRepository.getUserDetail(id)
+                .stream()
+                .map(this::tupleToUser)
+                .findFirst()
+                .orElse(new UserDTO());
+    }
+
+    @Override
+    public List<UserDTO> getAllIntruder() {
+        return userRepository.getAllIntruder()
+                .stream()
+                .map(this::tupleToUser)
+                .collect(Collectors.toList());
+    }
+
+
+    private UserDTO tupleToUser(Tuple tuple) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setId((Long) tuple.get("id"));
+        userDTO.setUsername((String) tuple.get("username"));
+        userDTO.setFirstName((String) tuple.get("firstName"));
+        userDTO.setLastName((String) tuple.get("lastName"));
+        userDTO.setEmail((String) tuple.get("email"));
+        userDTO.setPhoneNumber((String) tuple.get("phoneNumber"));
+
+        Long instructorDetailId = (Long) tuple.get("instructorDetailId");
+        if (instructorDetailId != null) {
+            userDTO.setInstructorDetail(getInstructorDetail(instructorDetailId));
+        }
+
+        Long studentDetailId = (Long) tuple.get("studentDetailId");
+        if (studentDetailId != null) {
+            userDTO.setStudentDetail(getStudentDetail(studentDetailId));
+        }
+        return userDTO;
+    }
+
+    private InstructorDetailDTO getInstructorDetail(Long id) {
+        return instructorDetailService.getInstructorDetail(id);
+    }
+
+    private StudentDetailDTO getStudentDetail(Long id) {
+        return studentDetailService.getDetailById(id);
     }
 }
