@@ -6,6 +6,8 @@ import com.example.demo.model.dto.CategoryDTO;
 import java.util.List;
 
 public interface CategoryService {
-    public List<CategoryDTO> getAllCategory();
+    List<CategoryDTO> getAllCategory();
+
+    CategoryDTO insertOrUpdate(CategoryDTO categoryDTO);
 
 }

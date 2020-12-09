@@ -8,6 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 public class LessonDTO extends BaseDTO{
+    private SectionDTO section;
     private String lessonTitle;
     private String urlVideo;
     private String description;

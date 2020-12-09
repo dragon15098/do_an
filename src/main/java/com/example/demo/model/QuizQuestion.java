@@ -14,6 +14,6 @@ import java.util.List;
 public class QuizQuestion extends BaseModel {
     private String questionTitle;
     private String question;
-    private int correctAnswerId;
+    private Long correctAnswerId;
     private Long quizId;
 }

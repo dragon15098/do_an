@@ -8,4 +8,6 @@ public interface QuizQuestionService {
     List<QuizQuestionDTO> getAllQuizQuestionByQuizId(Long quizId);
 
     List<QuizQuestionDTO> getQuizQuestionWithCorrectAnswer(Long quizId);
+
+    List<QuizQuestionDTO> insertOrUpdate(List<QuizQuestionDTO> quizQuestionDTOs);
 }

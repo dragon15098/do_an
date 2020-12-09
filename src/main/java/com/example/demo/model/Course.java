@@ -18,7 +18,7 @@ public class Course extends BaseModel {
     private String title;
     private String imageDescriptionLink;
     private Float rating;
-    private Integer ratingCount;
+    private Long ratingCount;
     private Long instructorId;
     private Long categoryId;
 

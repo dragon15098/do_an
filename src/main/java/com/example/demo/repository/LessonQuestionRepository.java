@@ -18,7 +18,8 @@ import java.util.List;
 public interface LessonQuestionRepository extends JpaRepository<LessonQuestion, Long>, JpaSpecificationExecutor<LessonQuestion> {
     @Query(value = " SELECT  s.id as id, " +
                             "s.question as question, " +
-                            "s.questionTitle as questionTitle " +
+                            "s.questionTitle as questionTitle, " +
+                            "s.correctAnswerId as correctAnswerId " +
                     " FROM LessonQuestion s" +
                     " WHERE s.lessonId = :lessonId ")
     List<Tuple> findAllByLessonId(@Param("lessonId") Long lessonId);

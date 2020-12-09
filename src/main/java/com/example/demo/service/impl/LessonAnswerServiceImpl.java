@@ -1,6 +1,9 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.model.LessonAnswer;
 import com.example.demo.model.dto.LessonAnswerDTO;
+import com.example.demo.model.helper.LessonAnswerHelper;
+import com.example.demo.model.helper.LessonHelper;
 import com.example.demo.repository.LessonAnswerRepository;
 import com.example.demo.service.LessonAnswerService;
 import lombok.RequiredArgsConstructor;
@@ -24,5 +27,20 @@ public class LessonAnswerServiceImpl implements LessonAnswerService {
                     return lessonAnswerDTO;
                 }
         ).collect(Collectors.toList());
+    }
+
+    @Override
+    public LessonAnswerDTO insertOrUpdate(LessonAnswerDTO lessonAnswerDTO) {
+        LessonAnswerHelper lessonAnswerHelper = new LessonAnswerHelper(lessonAnswerDTO);
+        LessonAnswer lessonAnswer = lessonAnswerHelper.lessonAnswerDTOToLessonAnswer();
+        lessonAnswer = lessonAnswerRepository.save(lessonAnswer);
+        lessonAnswerDTO.setId(lessonAnswer.getId());
+        return lessonAnswerDTO;
+    }
+
+    @Override
+    public List<LessonAnswerDTO> insertOrUpdate(List<LessonAnswerDTO> lessonAnswerDTOs) {
+        lessonAnswerDTOs.forEach(this::insertOrUpdate);
+        return lessonAnswerDTOs;
     }
 }

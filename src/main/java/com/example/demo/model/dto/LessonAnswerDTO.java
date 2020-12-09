@@ -8,4 +8,5 @@ import lombok.Setter;
 public class LessonAnswerDTO extends BaseDTO {
     private String explanation;
     private String content;
+    private LessonQuestionDTO lessonQuestion;
 }

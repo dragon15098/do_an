@@ -8,5 +8,5 @@ import lombok.Setter;
 @Setter
 public class QuizAnswerDTO extends BaseDTO {
     private String content;
-    private QuizQuestion quizQuestion;
+    private QuizQuestionDTO quizQuestion;
 }

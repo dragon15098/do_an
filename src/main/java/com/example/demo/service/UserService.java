@@ -11,4 +11,6 @@ public interface UserService {
     UserDTO getDetail(Long id);
 
     List<UserDTO> getAllIntruder();
+
+    UserDTO insertOrUpdate(UserDTO userDTO);
 }

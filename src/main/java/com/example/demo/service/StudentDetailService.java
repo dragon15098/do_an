@@ -5,4 +5,6 @@ import com.example.demo.model.dto.StudentDetailDTO;
 
 public interface StudentDetailService {
     StudentDetailDTO getDetailById(Long studentId);
+
+    StudentDetailDTO insertOrUpdate(StudentDetailDTO studentDetailDTO);
 }

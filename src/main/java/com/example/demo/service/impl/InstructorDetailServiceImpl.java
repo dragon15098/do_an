@@ -1,6 +1,8 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.model.InstructorDetail;
 import com.example.demo.model.dto.InstructorDetailDTO;
+import com.example.demo.model.helper.InstructorDetailHelper;
 import com.example.demo.repository.InstructorDetailRepository;
 import com.example.demo.service.InstructorDetailService;
 import lombok.RequiredArgsConstructor;
@@ -33,5 +35,14 @@ public class InstructorDetailServiceImpl implements InstructorDetailService {
             return instructorDetailDTO;
         }).findFirst();
         return instructorDetail.orElse(new InstructorDetailDTO());
+    }
+
+    @Override
+    public InstructorDetailDTO insertOrUpdate(InstructorDetailDTO instructorDetailDTO) {
+        InstructorDetailHelper instructorDetailHelper = new InstructorDetailHelper(instructorDetailDTO);
+        InstructorDetail instructorDetail = instructorDetailHelper.instructorDetailDTOToInstructorDetail();
+        instructorDetail = instructorDetailRepository.save(instructorDetail);
+        instructorDetailDTO.setId(instructorDetail.getId());
+        return instructorDetailDTO;
     }
 }

@@ -8,4 +8,8 @@ import java.util.List;
 
 public interface QuizAnswerService {
     List<QuizAnswerDTO> getAllQuizAnswerByQuestionId(Long quizQuestionId);
+
+    QuizAnswerDTO insertOrUpdate(QuizAnswerDTO quizAnswerDTO);
+
+    List<QuizAnswerDTO> insertOrUpdate(List<QuizAnswerDTO> quizAnswerDTOs);
 }

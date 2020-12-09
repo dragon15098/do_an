@@ -11,4 +11,5 @@ public interface QuizService {
 
     AnswerResultDTO submitQuiz(Long userCourseId, Long quizId, List<QuizAnswer> quizAnswers);
 
+    QuizDTO insertOrUpdate(QuizDTO quizDTO);
 }

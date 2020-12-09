@@ -1,7 +1,9 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.model.Lesson;
 import com.example.demo.model.dto.LessonDTO;
 import com.example.demo.model.dto.LessonQuestionDTO;
+import com.example.demo.model.helper.LessonHelper;
 import com.example.demo.repository.LessonRepository;
 import com.example.demo.service.LessonQuestionService;
 import com.example.demo.service.LessonService;
@@ -61,6 +63,33 @@ public class LessonServiceImpl implements LessonService {
             lesson.setId((Long) tuple.get("id"));
             return lesson;
         }).findFirst().orElse(new LessonDTO());
+    }
+
+    @Override
+    public LessonDTO insertOrUpdate(LessonDTO lessonDTO) {
+        LessonHelper lessonHelper = new LessonHelper(lessonDTO);
+        Lesson lesson = lessonHelper.lessonDTOToLesson();
+        lesson = lessonRepository.save(lesson);
+        lessonDTO.setId(lesson.getId());
+        insertOrUpdateQuestion(lessonDTO, lessonDTO.getLessonQuestions());
+        return lessonDTO;
+    }
+
+    @Override
+    public List<LessonDTO> insertOrUpdate(List<LessonDTO> lessonDTOs) {
+        lessonDTOs.forEach(this::insertOrUpdate);
+        return lessonDTOs;
+    }
+
+    private void insertOrUpdateQuestion(LessonDTO lesson, List<LessonQuestionDTO> lessonQuestions) {
+        if (lessonQuestions != null) {
+            // fake dto ignore loop for response
+            LessonDTO lessonDTO = new LessonDTO();
+            lessonDTO.setId(lesson.getId());
+
+            lessonQuestions.forEach(lessonQuestionDTO -> lessonQuestionDTO.setLesson(lessonDTO));
+            this.lessonQuestionService.insertOrUpdate(lessonQuestions);
+        }
     }
 
     private LessonDTO tupleToLessonDTO(Tuple tuple) {

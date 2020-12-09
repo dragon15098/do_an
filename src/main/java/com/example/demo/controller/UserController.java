@@ -38,7 +38,7 @@ public class UserController {
     }
 
     @GetMapping("/getDetail/{id}")
-    public ResponseEntity<UserDTO> getUserDetail(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUserDetail2(@PathVariable Long id) {
         return new ResponseEntity<>(userService.getDetail(id), HttpStatus.OK);
     }
 
@@ -58,5 +58,15 @@ public class UserController {
     @GetMapping("/instructor")
     public ResponseEntity<List<UserDTO>> getAllIntruder() {
         return new ResponseEntity<>(userService.getAllIntruder(), HttpStatus.OK);
+    }
+
+    @PostMapping("")
+    public ResponseEntity<UserDTO> insertOrUpdate(@RequestBody UserDTO userDTO) {
+        return new ResponseEntity<>(userService.insertOrUpdate(userDTO), HttpStatus.OK);
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDTO> getUserDetail(@PathVariable Long userId) {
+        return new ResponseEntity<>(userService.getDetail(userId), HttpStatus.OK);
     }
 }

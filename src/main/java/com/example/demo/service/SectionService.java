@@ -10,4 +10,8 @@ public interface SectionService {
     List<SectionDTO> getCourseSection(Long courseId);
 
     SectionDTO getSectionDetail(Long sectionId);
+
+    List<SectionDTO> insertOrUpdate(List<SectionDTO> sectionDTOs);
+
+    SectionDTO insertOrUpdate(SectionDTO sectionDTO);
 }

@@ -22,7 +22,7 @@ public class UserCourseServiceImpl implements UserCourseService {
     private final UserCourseRepository userCourseRepository;
     private final CourseService courseService;
     private final LessonService lessonService;
-    private final SectionService sectionService;
+//    private final SectionService sectionService;
 
     @Override
     public UserCourse insert(UserCourse userCourse) {
@@ -84,14 +84,14 @@ public class UserCourseServiceImpl implements UserCourseService {
     public boolean goToNextLesson(UserCourseDTO userCourse) {
         LessonDTO currentLesson = userCourse.getCurrentLesson();
         QuizDTO currentQuiz = userCourse.getCurrentQuiz();
-        List<SectionDTO> courseSection = sectionService.getCourseSection(userCourse.getCourse().getId());
+//        List<SectionDTO> courseSection = sectionService.getCourseSection(userCourse.getCourse().getId());
         List<Object> objects = new ArrayList<>();
-        courseSection.forEach(section -> {
-            objects.addAll(section.getLessons());
-            if (section.getQuiz() != null) {
-                objects.add(section.getQuiz());
-            }
-        });
+//        courseSection.forEach(section -> {
+//            objects.addAll(section.getLessons());
+//            if (section.getQuiz() != null) {
+//                objects.add(section.getQuiz());
+//            }
+//        });
         Long[] result = null;
         for (int i = 0; i < objects.size(); i++) {
             Object o = objects.get(i);

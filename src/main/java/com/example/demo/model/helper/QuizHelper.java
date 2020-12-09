@@ -11,6 +11,7 @@ public class QuizHelper {
     }
     public Quiz quizDTOToQuiz(){
         Quiz quiz = new Quiz();
+        quiz.setId(quizDTO.getId());
         quiz.setQuizTitle(quizDTO.getQuizTitle());
         return quiz;
     }

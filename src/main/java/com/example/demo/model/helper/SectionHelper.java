@@ -14,6 +14,7 @@ public class SectionHelper {
         section.setId(sectionDTO.getId());
         section.setSectionTitle(sectionDTO.getSectionTitle());
         section.setLength(sectionDTO.getLength());
+        section.setCourseId(sectionDTO.getCourse().getId());
         return section;
     }
 

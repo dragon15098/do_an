@@ -15,7 +15,7 @@ public class CourseDTO extends BaseDTO {
     private String title;
     private String imageDescriptionLink;
     private Float rating;
-    private Integer ratingCount;
+    private Long ratingCount;
     private UserDTO instructor;
     private Date createTime;
     private String description;

@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.model.QuizAnswer;
 import com.example.demo.model.dto.QuizAnswerDTO;
+import com.example.demo.model.helper.QuizAnswerHelper;
 import com.example.demo.repository.QuizAnswerRepository;
 import com.example.demo.service.QuizAnswerService;
 import lombok.RequiredArgsConstructor;
@@ -24,4 +25,20 @@ public class QuizAnswerServiceImpl implements QuizAnswerService {
             return quizAnswer;
         }).collect(Collectors.toList());
     }
+
+    @Override
+    public QuizAnswerDTO insertOrUpdate(QuizAnswerDTO quizAnswerDTO) {
+        QuizAnswerHelper quizAnswerHelper = new QuizAnswerHelper(quizAnswerDTO);
+        QuizAnswer quizAnswer = quizAnswerHelper.quizAnswerDTOToQuizAnswer();
+        quizAnswer = quizAnswerRepository.save(quizAnswer);
+        quizAnswerDTO.setId(quizAnswer.getId());
+        return quizAnswerDTO;
+    }
+
+    @Override
+    public List<QuizAnswerDTO> insertOrUpdate(List<QuizAnswerDTO> quizAnswerDTOs) {
+        quizAnswerDTOs.forEach(this::insertOrUpdate);
+        return quizAnswerDTOs;
+    }
+
 }

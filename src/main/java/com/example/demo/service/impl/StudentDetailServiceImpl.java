@@ -29,4 +29,9 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 
         return studentDetail.orElse(new StudentDetailDTO());
     }
+
+    @Override
+    public StudentDetailDTO insertOrUpdate(StudentDetailDTO studentDetailDTO) {
+        return null;
+    }
 }

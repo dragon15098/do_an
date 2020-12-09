@@ -18,8 +18,8 @@ public class InstructorDetail extends BaseModel {
 	private String imageLink;
 	private String facebookLink;
 	private String twitterLink;
+	private String youtubeLink;
 	private int numberCourses;
 	private float ratings;
 	private String achievement;
-	private String youtubeLink;
 }

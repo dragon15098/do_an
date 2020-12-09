@@ -1,6 +1,8 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.model.Category;
 import com.example.demo.model.dto.CategoryDTO;
+import com.example.demo.model.helper.CategoryHelper;
 import com.example.demo.repository.CategoryRepository;
 import com.example.demo.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +25,14 @@ public class CategoryServiceImpl implements CategoryService {
             return categoryDTO;
         }).collect(Collectors.toList());
 
+    }
+
+    @Override
+    public CategoryDTO insertOrUpdate(CategoryDTO categoryDTO) {
+        CategoryHelper categoryHelper = new CategoryHelper(categoryDTO);
+        Category category = categoryHelper.categoryDTOToCategory();
+        category = categoryRepository.save(category);
+        categoryDTO.setId(category.getId());
+        return categoryDTO;
     }
 }

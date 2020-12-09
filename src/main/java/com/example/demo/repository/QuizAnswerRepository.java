@@ -1,5 +1,7 @@
 package com.example.demo.repository;
 
+import com.example.demo.model.Quiz;
+import com.example.demo.model.QuizAnswer;
 import com.example.demo.model.QuizQuestion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -11,7 +13,7 @@ import javax.persistence.Tuple;
 import java.util.List;
 
 @Repository
-public interface QuizAnswerRepository extends JpaRepository<QuizQuestion, Long>, JpaSpecificationExecutor<QuizQuestion> {
+public interface QuizAnswerRepository extends JpaRepository<QuizAnswer, Long>, JpaSpecificationExecutor<QuizAnswer> {
     @Query(value = " SELECT qa.id as id, " +
             " qa.content as content " +
             " FROM QuizAnswer qa" +

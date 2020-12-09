@@ -13,4 +13,8 @@ public interface LessonService {
     LessonDTO getLessonById(Long lessonId);
 
     LessonDTO getFistLessonIdByCourseId(Long courseId);
+
+    LessonDTO insertOrUpdate(LessonDTO lessonDTO);
+
+    List<LessonDTO> insertOrUpdate(List<LessonDTO> lessonDTOs);
 }

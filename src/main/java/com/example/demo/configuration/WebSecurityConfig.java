@@ -62,7 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .cors() // Ngăn chặn request từ một domain khác
+                .cors()
                 .and()
                 .csrf().disable()
                 .authorizeRequests()

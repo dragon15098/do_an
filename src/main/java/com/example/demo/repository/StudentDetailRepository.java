@@ -12,7 +12,7 @@ import javax.persistence.Tuple;
 import java.util.List;
 
 @Repository
-public interface StudentDetailRepository extends JpaRepository<StudentDetail, Integer>, JpaSpecificationExecutor<StudentDetail> {
+public interface StudentDetailRepository extends JpaRepository<StudentDetail, Long>, JpaSpecificationExecutor<StudentDetail> {
     @Query(value = " SELECT  student.id as id, " +
                             "student.school as school, " +
                             "student.grade as grade " +

@@ -1,10 +1,10 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.model.Quiz;
 import com.example.demo.model.Section;
 import com.example.demo.model.dto.LessonDTO;
 import com.example.demo.model.dto.QuizDTO;
 import com.example.demo.model.dto.SectionDTO;
+import com.example.demo.model.helper.SectionHelper;
 import com.example.demo.repository.QuizRepository;
 import com.example.demo.repository.SectionRepository;
 import com.example.demo.service.LessonService;
@@ -29,6 +29,9 @@ public class SectionServiceImpl implements SectionService {
 
     @Autowired
     private final QuizQuestionService quizQuestionService;
+
+    @Autowired
+    private final QuizService quizService;
 
     @Autowired
     private final LessonService lessonService;
@@ -58,15 +61,49 @@ public class SectionServiceImpl implements SectionService {
                 .orElse(new SectionDTO());
     }
 
+    @Override
+    public List<SectionDTO> insertOrUpdate(List<SectionDTO> sectionDTOs) {
+        sectionDTOs.forEach(this::insertOrUpdate);
+        return sectionDTOs;
+    }
+
+    @Override
+    public SectionDTO insertOrUpdate(SectionDTO sectionDTO) {
+        SectionHelper sectionHelper = new SectionHelper(sectionDTO);
+        Section section = sectionHelper.sectionDTOToSection();
+        section = sectionRepository.save(section);
+        sectionDTO.setId(section.getId());
+        insertOrUpdateLesson(sectionDTO);
+        insertOrUpdateQuiz(section, sectionDTO);
+        return sectionDTO;
+    }
+
+    private void insertOrUpdateQuiz(Section section, SectionDTO sectionDTO) {
+        if (sectionDTO.getQuiz() != null) {
+            QuizDTO quizDTO = this.quizService.insertOrUpdate(sectionDTO.getQuiz());
+            section.setQuizId(quizDTO.getId());
+            section = sectionRepository.save(section);
+            sectionDTO.getQuiz().setId(section.getQuizId());
+        }
+    }
+
+    private void insertOrUpdateLesson(SectionDTO sectionDTO) {
+        // fake dto ignore loop when send response back
+        SectionDTO section = new SectionDTO();
+        section.setId(sectionDTO.getId());
+
+        if (sectionDTO.getLessons() != null) {
+            sectionDTO.getLessons().forEach(lessonDTO -> lessonDTO.setSection(section));
+            if (sectionDTO.getLessons() != null) {
+                lessonService.insertOrUpdate(sectionDTO.getLessons());
+            }
+        }
+    }
+
     private QuizDTO getQuizDetail(SectionDTO sectionDTO) {
         Long quizId = sectionDTO.getQuiz().getId();
-         return quizRepository.getQuizDetail(quizId).stream().map(tuple -> {
-            QuizDTO quiz = new QuizDTO();
-            quiz.setId((Long) tuple.get("id"));
-            quiz.setQuizTitle((String) tuple.get("quizTitle"));
-            quiz.setQuizQuestions(quizQuestionService.getAllQuizQuestionByQuizId(quizId));
-            return quiz;
-        }).findFirst().orElse(new QuizDTO());
+        return  quizService.getQuizDetail(quizId);
+
     }
 
     private SectionDTO tupleToDTO(Tuple tuple) {
