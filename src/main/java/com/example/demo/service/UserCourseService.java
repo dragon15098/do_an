@@ -6,7 +6,7 @@ import com.example.demo.model.dto.UserCourseDTO;
 import java.util.List;
 
 public interface UserCourseService {
-    UserCourse insert(UserCourse userCourse);
+    UserCourseDTO insertOrUpdate(UserCourseDTO userCourseDTO);
 
     List<UserCourseDTO> getAllByUser();
 

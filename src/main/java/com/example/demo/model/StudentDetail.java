@@ -12,5 +12,5 @@ import javax.persistence.Table;
 @Table(name = "student_detail")
 public class StudentDetail extends BaseModel {
 	private String school;
-	private Integer grade;
+	private String grade;
 }

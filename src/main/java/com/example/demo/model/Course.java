@@ -31,6 +31,7 @@ public class Course extends BaseModel {
     private String description;
 
     private Long commentCount;
+    private Float price;
 
     public enum CourseStatus {
         WAIT, APPROVED

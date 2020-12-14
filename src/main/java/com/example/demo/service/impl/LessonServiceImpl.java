@@ -1,9 +1,11 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.model.Course;
 import com.example.demo.model.Lesson;
 import com.example.demo.model.dto.LessonDTO;
 import com.example.demo.model.dto.LessonQuestionDTO;
 import com.example.demo.model.helper.LessonHelper;
+import com.example.demo.repository.CourseRepository;
 import com.example.demo.repository.LessonRepository;
 import com.example.demo.service.LessonQuestionService;
 import com.example.demo.service.LessonService;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class LessonServiceImpl implements LessonService {
     private final LessonRepository lessonRepository;
     private final LessonQuestionService lessonQuestionService;
+    private final CourseRepository courseRepository;
 
     @Override
     public List<LessonDTO> getAllLessonBySectionId(Long sectionId) {
@@ -72,7 +75,23 @@ public class LessonServiceImpl implements LessonService {
         lesson = lessonRepository.save(lesson);
         lessonDTO.setId(lesson.getId());
         insertOrUpdateQuestion(lessonDTO, lessonDTO.getLessonQuestions());
+        if (lesson.getUrlVideo() != null) {
+            String imageLink = lesson.getUrlVideo().split("\\.")[0] + ".jpg";
+            updateImageCourse(imageLink, lesson.getSectionId());
+        }
         return lessonDTO;
+    }
+
+    private void updateImageCourse(String imageUrl, Long sectionId) {
+        Course course = courseRepository.getCourseBySectionId(sectionId).stream().map(tuple -> {
+            Course c = new Course();
+            c.setId((Long) tuple.get("id"));
+            c.setImageDescriptionLink((String) tuple.get("imageDescriptionLink"));
+            return c;
+        }).findFirst().orElse(new Course());
+        if (course.getId() != null && course.getImageDescriptionLink() == null) {
+            courseRepository.updateImageDescriptionLink(imageUrl, course.getId());
+        }
     }
 
     @Override

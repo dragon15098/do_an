@@ -7,5 +7,5 @@ import lombok.Setter;
 @Setter
 public class StudentDetailDTO extends BaseDTO {
     private String school;
-    private Integer grade;
+    private String grade;
 }

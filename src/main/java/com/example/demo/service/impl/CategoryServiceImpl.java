@@ -35,4 +35,14 @@ public class CategoryServiceImpl implements CategoryService {
         categoryDTO.setId(category.getId());
         return categoryDTO;
     }
+
+    @Override
+    public CategoryDTO getCategoryById(Long categoryId) {
+        return categoryRepository.getCategoryById(categoryId).stream().map(tuple -> {
+            CategoryDTO category = new CategoryDTO();
+            category.setId((Long) tuple.get("id"));
+            category.setName((String) tuple.get("name"));
+            return category;
+        }).findFirst().orElse(new CategoryDTO());
+    }
 }

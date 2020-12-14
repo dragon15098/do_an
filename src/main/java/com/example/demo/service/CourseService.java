@@ -15,4 +15,10 @@ public interface CourseService {
     CourseDTO getCourseById(Long id);
 
     CourseDTO insertOrUpdate(CourseDTO courseDTO);
+
+    List<CourseDTO> findCourseByTitle(String title);
+
+    List<CourseDTO> getCourseHottest();
+
+    CourseDTO approveCourse(CourseDTO courseDTO);
 }

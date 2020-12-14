@@ -1,11 +1,14 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.UserCourse;
-import com.example.demo.model.dto.*;
+import com.example.demo.model.dto.CourseDTO;
+import com.example.demo.model.dto.LessonDTO;
+import com.example.demo.model.dto.QuizDTO;
+import com.example.demo.model.dto.UserCourseDTO;
+import com.example.demo.model.helper.UserCourseHelper;
 import com.example.demo.repository.UserCourseRepository;
 import com.example.demo.service.CourseService;
 import com.example.demo.service.LessonService;
-import com.example.demo.service.SectionService;
 import com.example.demo.service.UserCourseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -13,7 +16,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.Tuple;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,14 +31,18 @@ public class UserCourseServiceImpl implements UserCourseService {
 //    private final SectionService sectionService;
 
     @Override
-    public UserCourse insert(UserCourse userCourse) {
+    public UserCourseDTO insertOrUpdate(UserCourseDTO userCourseDTO) {
+        UserCourseHelper userCourseHelper = new UserCourseHelper(userCourseDTO);
+        UserCourse userCourse = userCourseHelper.userCourseDTOToUserCourse();
         userCourse.setStatus(UserCourse.UserCourseStatus.INCOMPLETE);
         userCourse.setPaymentStatus(UserCourse.PaymentStatus.COMPLETE);
         Calendar calendar = Calendar.getInstance();
         userCourse.setPaymentDate(calendar.getTime());
         userCourse.setProcess(0);
         userCourse.setCurrentLessonId(lessonService.getFistLessonIdByCourseId(userCourse.getCourseId()).getId());
-        return userCourseRepository.save(userCourse);
+        userCourse = userCourseRepository.save(userCourse);
+        userCourseDTO.setId(userCourse.getId());
+        return userCourseDTO;
     }
 
     @Override

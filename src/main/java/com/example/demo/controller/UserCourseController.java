@@ -19,9 +19,9 @@ public class UserCourseController {
     UserCourseService userCourseService;
 
     @PostMapping("/buy_course")
-    public ResponseEntity<UserCourse> buyCourse(@RequestBody UserCourse userCourse) {
-        userCourse = userCourseService.insert(userCourse);
-        return new ResponseEntity<>(userCourse, HttpStatus.OK);
+    public ResponseEntity<UserCourseDTO> buyCourse(@RequestBody UserCourseDTO userCourseDTO) {
+        userCourseDTO = userCourseService.insertOrUpdate(userCourseDTO);
+        return new ResponseEntity<>(userCourseDTO, HttpStatus.OK);
     }
 
     @GetMapping("/get_all")

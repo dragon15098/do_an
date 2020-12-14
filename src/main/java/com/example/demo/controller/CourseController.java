@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -44,13 +43,18 @@ public class CourseController {
         return new ResponseEntity<>(courseService.getAll(), HttpStatus.OK);
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<List<Course>> test() {
-        return new ResponseEntity<>(courseService.getAll(), HttpStatus.OK);
+    @GetMapping("/get_course_type_1")
+    public ResponseEntity<List<CourseDTO>> getCourseHottest() {
+        return new ResponseEntity<>(courseService.getCourseHottest(), HttpStatus.OK);
     }
 
-    @GetMapping("/get_course_type_1")
-    public ResponseEntity<List<Course>> getCourseTypeOne() {
-        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+    @GetMapping("/")
+    public ResponseEntity<List<CourseDTO>> findCourse(String courseName) {
+        return new ResponseEntity<>(courseService.findCourseByTitle(courseName), HttpStatus.OK);
+    }
+
+    @PostMapping("/approve")
+    public ResponseEntity<CourseDTO> approveCourse(@RequestBody CourseDTO courseDTO) {
+        return new ResponseEntity<>(courseService.approveCourse(courseDTO), HttpStatus.OK);
     }
 }

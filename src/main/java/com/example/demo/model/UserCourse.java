@@ -18,23 +18,15 @@ public class UserCourse extends BaseModel {
 
     private Long userId;
     private Long courseId;
-
     @Enumerated(EnumType.STRING)
     private UserCourseStatus status;
-
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
-
     @JsonFormat(pattern = "MMM dd, yyyy hh:mm:ss a")
     private Date paymentDate;
-
     private Long currentLessonId;
-
     private Long currentQuizId;
-
     private int process;
-
-
     public enum UserCourseStatus {
         INCOMPLETE, COMPLETE
     }

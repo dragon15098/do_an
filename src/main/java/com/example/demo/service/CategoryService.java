@@ -10,4 +10,6 @@ public interface CategoryService {
 
     CategoryDTO insertOrUpdate(CategoryDTO categoryDTO);
 
+    CategoryDTO getCategoryById(Long categoryId);
+
 }

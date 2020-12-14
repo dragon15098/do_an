@@ -1,25 +1,20 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.Course;
-import com.example.demo.model.Section;
+import com.example.demo.model.dto.CategoryDTO;
 import com.example.demo.model.dto.CourseDTO;
-import com.example.demo.model.dto.LessonDTO;
-import com.example.demo.model.dto.QuizDTO;
-import com.example.demo.model.dto.SectionDTO;
+import com.example.demo.model.dto.UserDTO;
 import com.example.demo.model.helper.CourseHelper;
-import com.example.demo.model.helper.SectionHelper;
 import com.example.demo.repository.CourseRepository;
-import com.example.demo.repository.SectionRepository;
+import com.example.demo.service.CategoryService;
 import com.example.demo.service.CourseService;
-import com.example.demo.service.LessonService;
 import com.example.demo.service.SectionService;
 import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.Cache;
 import javax.persistence.Tuple;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +24,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CourseServiceImpl implements CourseService {
     private final CourseRepository courseRepository;
+    private final CategoryService categoryService;
     private final UserService userService;
     private final SectionService sectionService;
 
@@ -44,9 +40,14 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDTO getCourseById(Long id) {
-        Optional<CourseDTO> first = courseRepository.getCourseDetail(id).stream().map(tuple -> {
+        Optional<CourseDTO> first = courseRepository.getCourseDetail(id).stream()
+                .map(tuple -> {
             CourseDTO course = tupleToCourseDTO(tuple);
-            return getInstructorDetail(course, tuple);
+            CategoryDTO courseCategory = getCourseCategory(tuple);
+            UserDTO instructor = getInstructorDetail(tuple);
+            course.setCategory(courseCategory);
+            course.setInstructor(instructor);
+            return course;
         }).findFirst();
         return first.orElse(new CourseDTO());
     }
@@ -68,6 +69,20 @@ public class CourseServiceImpl implements CourseService {
         return courseDTO;
     }
 
+    @Override
+    public List<CourseDTO> findCourseByTitle(String title) {
+        return courseRepository.getCourseByTitle("%" + title + "%")
+                .stream()
+                .map(this::tupleToCourseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<CourseDTO> getCourseHottest() {
+//        return courseRepository.getCourseBySectionId();
+        return new ArrayList<>();
+    }
+
     private void updateSections(CourseDTO courseDTO) {
 
         if (courseDTO.getSections() != null) {
@@ -78,6 +93,13 @@ public class CourseServiceImpl implements CourseService {
             courseDTO.getSections().forEach(sectionDTO -> sectionDTO.setCourse(course));
             sectionService.insertOrUpdate(courseDTO.getSections());
         }
+    }
+
+    @Override
+    public CourseDTO approveCourse(CourseDTO courseDTO) {
+        courseRepository.approveCourse(courseDTO.getId(), Course.CourseStatus.APPROVED);
+        courseDTO.setStatus(Course.CourseStatus.APPROVED);
+        return courseDTO;
     }
 
 
@@ -92,11 +114,16 @@ public class CourseServiceImpl implements CourseService {
         courseDTO.setStatus((Course.CourseStatus) tuple.get("status"));
         courseDTO.setDescription((String) tuple.get("description"));
         courseDTO.setCommentCount((Long) tuple.get("commentCount"));
+        courseDTO.setPrice((Float) tuple.get("price"));
         return courseDTO;
     }
 
-    private CourseDTO getInstructorDetail(CourseDTO courseDTO, Tuple tuple) {
-        courseDTO.setInstructor(userService.getDetail((Long) tuple.get("instructorId")));
-        return courseDTO;
+    private UserDTO getInstructorDetail(Tuple tuple) {
+        return userService.getDetail((Long) tuple.get("instructorId"));
+
+    }
+
+    private CategoryDTO getCourseCategory(Tuple tuple) {
+        return categoryService.getCategoryById((Long) tuple.get("categoryId"));
     }
 }

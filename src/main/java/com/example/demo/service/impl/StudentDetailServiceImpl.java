@@ -21,7 +21,7 @@ public class StudentDetailServiceImpl implements StudentDetailService {
         Optional<StudentDetailDTO> studentDetail = studentDetailRepository.getDetailById(studentId).stream().map(tuple -> {
             StudentDetailDTO studentDetailDTO = new StudentDetailDTO();
             studentDetailDTO.setId((Long) tuple.get("id"));
-            studentDetailDTO.setGrade((Integer) tuple.get("grade"));
+            studentDetailDTO.setGrade((String) tuple.get("grade"));
             studentDetailDTO.setSchool((String) tuple.get("school"));
             return studentDetailDTO;
 
