@@ -1,10 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.model.UserCourse;
-import com.example.demo.model.dto.CourseDTO;
-import com.example.demo.model.dto.LessonDTO;
-import com.example.demo.model.dto.QuizDTO;
-import com.example.demo.model.dto.UserCourseDTO;
+import com.example.demo.model.dto.*;
 import com.example.demo.model.helper.UserCourseHelper;
 import com.example.demo.repository.UserCourseRepository;
 import com.example.demo.service.CourseService;
@@ -38,6 +35,7 @@ public class UserCourseServiceImpl implements UserCourseService {
         userCourse.setPaymentStatus(UserCourse.PaymentStatus.COMPLETE);
         Calendar calendar = Calendar.getInstance();
         userCourse.setPaymentDate(calendar.getTime());
+        userCourse.setCreateDate(calendar.getTime());
         userCourse.setProcess(0);
         userCourse.setCurrentLessonId(lessonService.getFistLessonIdByCourseId(userCourse.getCourseId()).getId());
         userCourse = userCourseRepository.save(userCourse);
@@ -61,8 +59,14 @@ public class UserCourseServiceImpl implements UserCourseService {
     }
 
     @Override
-    public UserCourseDTO getUserCourseByUserCourseId(Long userCourseId) {
-        return userCourseRepository.getUserCourseById(userCourseId).stream().map(this::tupleToUserCourse).findFirst().orElse(new UserCourseDTO());
+    public UserCourseDTO ratingCourse(UserCourseDTO userCourseDTO) {
+        UserCourse userCourse = userCourseRepository.getOne(userCourseDTO.getId());
+        userCourse.setCourseComment(userCourseDTO.getCourseComment());
+        userCourse.setInstructorComment(userCourseDTO.getInstructorComment());
+        userCourse.setCourseRating(userCourseDTO.getCourseRating());
+        userCourse.setInstructorRating(userCourseDTO.getInstructorRating());
+        userCourseRepository.save(userCourse);
+        return userCourseDTO;
     }
 
 
@@ -74,12 +78,10 @@ public class UserCourseServiceImpl implements UserCourseService {
         userCourse.setPaymentStatus((UserCourse.PaymentStatus) tuple.get("paymentStatus"));
         userCourse.setPaymentDate((Date) tuple.get("paymentDate"));
         userCourse.setProcess((Integer) tuple.get("process"));
-        Long lessonId = (Long) tuple.get("currentLessonId");
-        if (lessonId != null) {
-            LessonDTO lesson = new LessonDTO();
-            lesson.setId(lessonId);
-            userCourse.setCurrentLesson(lesson);
-        }
+
+        userCourse.setCurrentLesson(getLessonFromTuple(tuple));
+        userCourse.setCurrentQuiz(getQuizFromTuple(tuple));
+
         Long quizId = (Long) tuple.get("currentQuizId");
         if (quizId != null) {
             QuizDTO quiz = new QuizDTO();
@@ -90,51 +92,24 @@ public class UserCourseServiceImpl implements UserCourseService {
         return userCourse;
     }
 
-    @Override
-    public boolean goToNextLesson(UserCourseDTO userCourse) {
-        LessonDTO currentLesson = userCourse.getCurrentLesson();
-        QuizDTO currentQuiz = userCourse.getCurrentQuiz();
-//        List<SectionDTO> courseSection = sectionService.getCourseSection(userCourse.getCourse().getId());
-        List<Object> objects = new ArrayList<>();
-//        courseSection.forEach(section -> {
-//            objects.addAll(section.getLessons());
-//            if (section.getQuiz() != null) {
-//                objects.add(section.getQuiz());
-//            }
-//        });
-        Long[] result = null;
-        for (int i = 0; i < objects.size(); i++) {
-            Object o = objects.get(i);
-            if (o instanceof LessonDTO) {
-                if (currentLesson != null) {
-                    if (((LessonDTO) o).getId().equals(currentLesson.getId())) {
-                        result = getNextId(objects, i);
-                    }
-                } else {
-                    if (((LessonDTO) o).getId().equals(currentQuiz.getId())) {
-                        result = getNextId(objects, i);
-                    }
-                }
-            } else if (o instanceof QuizDTO) {
-                if (currentQuiz != null) {
-                    if (((QuizDTO) o).getId().equals(currentQuiz.getId())) {
-                        result = getNextId(objects, i);
-                    }
-                } else {
-                    if (((QuizDTO) o).getId().equals(currentLesson.getId())) {
-                        result = getNextId(objects, i);
-                    }
-                }
-            }
+    private LessonDTO getLessonFromTuple(Tuple tuple) {
+        Long lessonId = (Long) tuple.get("currentLessonId");
+        if (lessonId != null) {
+            LessonDTO lesson = new LessonDTO();
+            lesson.setId(lessonId);
+            return lesson;
         }
+        return null;
+    }
 
-        UserCourse entity = userCourseRepository.getOne(userCourse.getId());
-        if (result != null) {
-            entity.setCurrentLessonId(result[0]);
-            entity.setCurrentQuizId(result[1]);
+    private QuizDTO getQuizFromTuple(Tuple tuple) {
+        Long quizId = (Long) tuple.get("currentQuizId");
+        if (quizId != null) {
+            QuizDTO quiz = new QuizDTO();
+            quiz.setId(quizId);
+            return quiz;
         }
-        userCourseRepository.save(entity);
-        return true;
+        return null;
     }
 
     @Override
@@ -151,18 +126,8 @@ public class UserCourseServiceImpl implements UserCourseService {
                 userCourse.setId((Long) tuple.get("id"));
                 userCourse.setCourse(course);
 
-                Long lessonId = (Long) tuple.get("currentLessonId");
-                if (lessonId != null) {
-                    LessonDTO lesson = new LessonDTO();
-                    lesson.setId(lessonId);
-                    userCourse.setCurrentLesson(lesson);
-                }
-                Long quizId = (Long) tuple.get("currentQuizId");
-                if (quizId != null) {
-                    QuizDTO quiz = new QuizDTO();
-                    quiz.setId(quizId);
-                    userCourse.setCurrentQuiz(quiz);
-                }
+                userCourse.setCurrentLesson(getLessonFromTuple(tuple));
+                userCourse.setCurrentQuiz(getQuizFromTuple(tuple));
 
                 userCourse.setProcess((Integer) tuple.get("process"));
                 return userCourse;
@@ -173,17 +138,20 @@ public class UserCourseServiceImpl implements UserCourseService {
         return new UserCourseDTO();
     }
 
-    private Long[] getNextId(List<Object> objects, int i) {
-        Long nextLessonId = null;
-        Long nextQuizId = null;
-        if (i < objects.size() - 1) {
-            Object next = objects.get(i + 1);
-            if (next instanceof LessonDTO) {
-                nextLessonId = ((LessonDTO) next).getId();
-            } else if (next instanceof QuizDTO) {
-                nextQuizId = ((QuizDTO) next).getId();
-            }
+    @Override
+    public List<UserCourseDTO> getUserComments(Long courseId) {
+        List<UserCourseDTO> comments = userCourseRepository.getUserComments(courseId).stream().map(tuple -> {
+            UserCourseDTO userCourse = new UserCourseDTO();
+            userCourse.setCourseComment((String) tuple.get("courseComment"));
+            userCourse.setCourseRating((Float) tuple.get("courseRating"));
+            UserDTO user = new UserDTO();
+            user.setImageUrl((String) tuple.get("imageUrl"));
+            userCourse.setUser(user);
+            return userCourse;
+        }).collect(Collectors.toList());
+        if (comments.size() >= 3) {
+            return comments.subList(0, 3);
         }
-        return new Long[]{nextLessonId, nextQuizId};
+        return comments;
     }
 }

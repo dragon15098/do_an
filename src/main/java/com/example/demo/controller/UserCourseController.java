@@ -24,6 +24,13 @@ public class UserCourseController {
         return new ResponseEntity<>(userCourseDTO, HttpStatus.OK);
     }
 
+    @PostMapping("/rating")
+    public ResponseEntity<UserCourseDTO> ratingCourse (@RequestBody UserCourseDTO userCourseDTO) {
+        userCourseDTO = userCourseService.ratingCourse(userCourseDTO);
+        return new ResponseEntity<>(userCourseDTO, HttpStatus.OK);
+    }
+
+
     @GetMapping("/get_all")
     public ResponseEntity<List<UserCourseDTO>> getAll() {
         List<UserCourseDTO> userCourses = userCourseService.getAllByUser();
@@ -33,6 +40,12 @@ public class UserCourseController {
     @GetMapping("/get/{courseId}")
     public ResponseEntity<UserCourseDTO> getUserCourseByCourseId(@PathVariable("courseId") Long courseId) {
         UserCourseDTO userCourse = userCourseService.getUserCourseByCourseId(courseId);
+        return new ResponseEntity<>(userCourse, HttpStatus.OK);
+    }
+
+    @GetMapping("/get_comment/{courseId}")
+    public ResponseEntity<List<UserCourseDTO>> getUserComments(@PathVariable("courseId") Long courseId) {
+        List<UserCourseDTO> userCourse = userCourseService.getUserComments(courseId);
         return new ResponseEntity<>(userCourse, HttpStatus.OK);
     }
 }

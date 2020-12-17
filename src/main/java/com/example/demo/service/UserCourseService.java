@@ -10,9 +10,9 @@ public interface UserCourseService {
 
     List<UserCourseDTO> getAllByUser();
 
-    UserCourseDTO getUserCourseByUserCourseId(Long userCourseId);
-
-    boolean goToNextLesson(UserCourseDTO userCourse);
+    UserCourseDTO ratingCourse(UserCourseDTO userCourseDTO);
 
     UserCourseDTO getUserCourseByCourseId(Long courseId);
+
+    List<UserCourseDTO> getUserComments(Long courseId);
 }

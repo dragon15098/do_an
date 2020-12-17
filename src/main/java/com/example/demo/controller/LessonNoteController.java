@@ -31,12 +31,8 @@ public class LessonNoteController {
 
 
     @PostMapping("/delete")
-    public ResponseEntity<LessonNote> deleteLessonNote(@RequestBody LessonNoteDTO lessonNoteDTO) {
-        try {
-            lessonNoteService.deleteLessonNote(lessonNoteDTO);
-        } catch (Exception e) {
-
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<LessonNoteDTO> deleteLessonNote(@RequestBody LessonNoteDTO lessonNoteDTO) {
+        lessonNoteService.deleteLessonNote(lessonNoteDTO);
+        return new ResponseEntity<>(lessonNoteDTO, HttpStatus.OK);
     }
 }

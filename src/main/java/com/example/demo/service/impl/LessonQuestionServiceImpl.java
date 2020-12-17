@@ -1,18 +1,15 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.model.Lesson;
-import com.example.demo.model.LessonAnswer;
-import com.example.demo.model.LessonQuestion;
-import com.example.demo.model.dto.AnswerResultDTO;
-import com.example.demo.model.dto.LessonAnswerDTO;
-import com.example.demo.model.dto.LessonQuestionDTO;
+import com.example.demo.model.*;
+import com.example.demo.model.dto.*;
 import com.example.demo.model.helper.LessonQuestionHelper;
-import com.example.demo.repository.LessonQuestionRepository;
+import com.example.demo.repository.*;
 import com.example.demo.service.LessonAnswerService;
 import com.example.demo.service.LessonQuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -21,9 +18,14 @@ import java.util.stream.IntStream;
 @Service
 @RequiredArgsConstructor
 public class LessonQuestionServiceImpl implements LessonQuestionService {
-    public final LessonQuestionRepository lessonQuestionRepository;
     public final LessonAnswerService lessonAnswerService;
-//    public final UserCourseService userCourseService;
+
+    public final LessonQuestionRepository lessonQuestionRepository;
+    private final UserCourseRepository userCourseRepository;
+    private final SectionRepository sectionRepository;
+    private final LessonRepository lessonRepository;
+
+    private final QuizRepository quizRepository;
 
     @Override
     public List<LessonQuestionDTO> getLessonQuestion(Long lessonId) {
@@ -75,16 +77,113 @@ public class LessonQuestionServiceImpl implements LessonQuestionService {
         });
 
         // if all true -> move user to next lesson
-//        if (passed.get()) {
-//            UserCourseDTO userCourse = userCourseService.getUserCourseByUserCourseId(userCourseId);
-//            if (userCourse.getCurrentLesson().getId().equals(lessonId)) {
-//                userCourseService.goToNextLesson(userCourse);
-//            }
-//        }
+        if (passed.get()) {
+            UserCourseDTO userCourseDTO = userCourseRepository.getUserCourseById(userCourseId).stream().map(tuple -> {
+                UserCourseDTO userCourse = new UserCourseDTO();
+
+                userCourse.setId((Long) tuple.get("id"));
+
+                CourseDTO courseDTO = new CourseDTO();
+                courseDTO.setId((Long) tuple.get("courseId"));
+                userCourse.setCourse(courseDTO);
+
+                LessonDTO lessonDTO = new LessonDTO();
+                lessonDTO.setId((Long) tuple.get("currentLessonId"));
+                userCourse.setCurrentLesson(lessonDTO);
+
+                QuizDTO quizDTO = new QuizDTO();
+                quizDTO.setId((Long) tuple.get("currentQuizId"));
+                userCourse.setCurrentQuiz(quizDTO);
+
+                return userCourse;
+            }).findFirst().orElse(new UserCourseDTO());
+            if (userCourseDTO.getCurrentLesson().getId().equals(lessonId)) {
+                goToNextLesson(userCourseDTO);
+                answerResult.setNextLessonId(userCourseDTO.getCurrentLesson().getId());
+                answerResult.setNextQuizId(userCourseDTO.getCurrentQuiz().getId());
+            }
+        }
 
         // set result for response
         answerResult.setLessonQuestions(lessonQuestions);
         return answerResult;
+    }
+
+    private List<SectionDTO> getCourseSection(Long courseId) {
+        return sectionRepository.getAllSectionByCourseId(courseId).stream().map(tuple -> {
+            SectionDTO sectionDTO = new SectionDTO();
+            sectionDTO.setId((Long) tuple.get("id"));
+            sectionDTO.setLessons(getLessonDTO(sectionDTO.getId()));
+            sectionDTO.setQuiz(getQuizDTO((Long) tuple.get("quizId")));
+            return sectionDTO;
+        }).collect(Collectors.toList());
+    }
+
+    private List<LessonDTO> getLessonDTO(Long sectionId) {
+        return lessonRepository.findAllLessonBySectionId(sectionId).stream().map(tuple -> {
+            LessonDTO lessonDTO = new LessonDTO();
+            lessonDTO.setId((Long) tuple.get("id"));
+            return lessonDTO;
+        }).collect(Collectors.toList());
+    }
+
+    private QuizDTO getQuizDTO(Long quizId) {
+        return quizRepository.getQuizDetail(quizId).stream().map(tuple -> {
+            QuizDTO quizDTO = new QuizDTO();
+            quizDTO.setId((Long) tuple.get("id"));
+            return quizDTO;
+        }).findFirst().orElse(new QuizDTO());
+    }
+
+    private void goToNextLesson(UserCourseDTO userCourse) {
+        List<Object> lessonAndQuiz = getAllLessonAndQuiz(userCourse.getCourse().getId());
+        Long[] result = getNextId(lessonAndQuiz, userCourse);
+        UserCourse entity = userCourseRepository.getOne(userCourse.getId());
+        if (result != null) {
+            if (entity.getCurrentLessonId() < result[0]) {
+                entity.setCurrentLessonId(result[0]);
+                userCourse.getCurrentLesson().setId(result[0]);
+            }
+            if (entity.getCurrentQuizId() < result[1]) {
+                entity.setCurrentQuizId(result[1]);
+                userCourse.getCurrentQuiz().setId(result[1]);
+
+            }
+        }
+        userCourseRepository.save(entity);
+    }
+
+    private List<Object> getAllLessonAndQuiz(Long courseId) {
+        List<SectionDTO> courseSection = getCourseSection(courseId);
+        List<Object> objects = new ArrayList<>();
+        courseSection.forEach(section -> {
+            objects.addAll(section.getLessons());
+            if (section.getQuiz() != null) {
+                objects.add(section.getQuiz());
+            }
+        });
+        return objects;
+    }
+
+    private Long[] getNextId(List<Object> objects, UserCourseDTO userCourse) {
+        Long nextLessonId = null;
+        Long nextQuizId = null;
+        Long currentLessonId = userCourse.getCurrentLesson().getId();
+        for (int i = 0; i < objects.size() - 1; i++) {
+            Object current = objects.get(i);
+            if (current instanceof LessonDTO && currentLessonId.equals(((LessonDTO) current).getId())) {
+                Object next = objects.get(i + 1);
+                if (next instanceof LessonDTO) {
+                    nextLessonId = ((LessonDTO) next).getId();
+                    nextQuizId = userCourse.getCurrentQuiz().getId();
+                } else if (next instanceof QuizDTO) {
+                    nextLessonId = userCourse.getCurrentLesson().getId();
+                    nextQuizId = ((QuizDTO) next).getId();
+                }
+                return new Long[]{nextLessonId, nextQuizId};
+            }
+        }
+        return null;
     }
 
     @Override
@@ -93,9 +192,7 @@ public class LessonQuestionServiceImpl implements LessonQuestionService {
         LessonQuestion lessonQuestion = lessonQuestionHelper.lessonQuestionDTOToLessonQuestion();
         lessonQuestion = lessonQuestionRepository.save(lessonQuestion);
         lessonQuestionDTO.setId(lessonQuestion.getId());
-
         insertOrUpdateAnswer(lessonQuestionDTO);
-
         updateCorrectAnswer(lessonQuestion, lessonQuestionDTO);
         return lessonQuestionDTO;
     }
@@ -124,4 +221,6 @@ public class LessonQuestionServiceImpl implements LessonQuestionService {
         lessonQuestionDTOs.forEach(this::insertOrUpdate);
         return lessonQuestionDTOs;
     }
+
+
 }

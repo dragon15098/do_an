@@ -24,9 +24,16 @@ public class UserCourse extends BaseModel {
     private PaymentStatus paymentStatus;
     @JsonFormat(pattern = "MMM dd, yyyy hh:mm:ss a")
     private Date paymentDate;
+
+    @JsonFormat(pattern = "MMM dd, yyyy hh:mm:ss a")
+    private Date createDate;
     private Long currentLessonId;
     private Long currentQuizId;
     private int process;
+    private String courseComment;
+    private String instructorComment;
+    private Float courseRating;
+    private Float instructorRating;
     public enum UserCourseStatus {
         INCOMPLETE, COMPLETE
     }

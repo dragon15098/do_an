@@ -18,6 +18,7 @@ public class UserDTO extends BaseDTO {
     private String lastName;
     private String email;
     private String phoneNumber;
+    private String imageUrl;
     private InstructorDetailDTO instructorDetail;
     private StudentDetailDTO studentDetail;
     private List<RoleDTO> roles;

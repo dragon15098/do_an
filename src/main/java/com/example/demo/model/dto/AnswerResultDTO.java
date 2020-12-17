@@ -11,4 +11,6 @@ public class AnswerResultDTO extends BaseDTO{
     private List<LessonQuestionDTO> lessonQuestions;
     private List<QuizQuestionDTO> quizQuestions;
     private Boolean totalResult;
+    private Long nextQuizId;
+    private Long nextLessonId;
 }

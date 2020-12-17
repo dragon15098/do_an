@@ -41,6 +41,7 @@ public class LessonNoteServiceImpl implements LessonNoteService {
             Long userId = Long.parseLong(auth.getPrincipal().toString());
             LessonNote lessonNote = new LessonNote();
             lessonNote.setUserId(userId);
+            lessonNote.setNote(lessonNoteDTO.getNote());
             lessonNote.setLessonId(lessonNoteDTO.getLesson().getId());
             lessonNote = lessonNoteRepository.save(lessonNote);
             lessonNoteDTO.setId(lessonNote.getId());

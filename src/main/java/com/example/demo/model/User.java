@@ -51,6 +51,8 @@ public class User implements UserDetails {
 
     private Long instructorDetailId;
 
+    private String imageUrl;
+
     private Long studentDetailId;
 
     public void setId(Long id) {

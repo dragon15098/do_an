@@ -2,23 +2,31 @@ package com.example.demo.service.impl;
 
 import com.example.demo.model.Quiz;
 import com.example.demo.model.QuizAnswer;
-import com.example.demo.model.dto.AnswerResultDTO;
-import com.example.demo.model.dto.QuizDTO;
-import com.example.demo.model.dto.QuizQuestionDTO;
+import com.example.demo.model.UserCourse;
+import com.example.demo.model.dto.*;
 import com.example.demo.model.helper.QuizHelper;
+import com.example.demo.repository.LessonRepository;
 import com.example.demo.repository.QuizRepository;
+import com.example.demo.repository.SectionRepository;
+import com.example.demo.repository.UserCourseRepository;
 import com.example.demo.service.QuizQuestionService;
 import com.example.demo.service.QuizService;
+import com.example.demo.utils.QuestionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class QuizServiceImpl implements QuizService {
     private final QuizRepository quizRepository;
     private final QuizQuestionService quizQuestionService;
+    private final SectionRepository sectionRepository;
+    private final LessonRepository lessonRepository;
+    private final UserCourseRepository userCourseRepository;
 
     @Override
     public QuizDTO getQuizDetail(Long quizId) {
@@ -39,13 +47,94 @@ public class QuizServiceImpl implements QuizService {
         boolean passQuiz = checkUserAnswers(questions, currentAnswers);
         answerResultDTO.setQuizQuestions(questions);
         if (passQuiz) {
-//            UserCourseDTO userCourse = userCourseService.getUserCourseByUserCourseId(userCourseId);
-//            if (userCourse.getCurrentQuiz() != null && userCourse.getCurrentQuiz().getId().equals(quizId)) {
-//                goToNextLesson(userCourse);
-//            }
+            UserCourseDTO userCourseDTO = userCourseRepository.getUserCourseById(userCourseId).stream().map(tuple -> {
+                UserCourseDTO userCourse = new UserCourseDTO();
+
+                userCourse.setId((Long) tuple.get("id"));
+
+                CourseDTO courseDTO = new CourseDTO();
+                courseDTO.setId((Long) tuple.get("courseId"));
+                userCourse.setCourse(courseDTO);
+
+                LessonDTO lessonDTO = new LessonDTO();
+                lessonDTO.setId((Long) tuple.get("currentLessonId"));
+                userCourse.setCurrentLesson(lessonDTO);
+
+                QuizDTO quizDTO = new QuizDTO();
+                quizDTO.setId((Long) tuple.get("currentQuizId"));
+                userCourse.setCurrentQuiz(quizDTO);
+
+                return userCourse;
+            }).findFirst().orElse(new UserCourseDTO());
+            if (userCourseDTO.getCurrentQuiz().getId().equals(quizId)) {
+                goToNextLesson(userCourseDTO);
+                answerResultDTO.setNextLessonId(userCourseDTO.getCurrentLesson().getId());
+                answerResultDTO.setNextQuizId(userCourseDTO.getCurrentQuiz().getId());
+            }
         }
         return answerResultDTO;
     }
+
+
+    private void goToNextLesson(UserCourseDTO userCourse) {
+        List<Object> lessonAndQuiz = getAllLessonAndQuiz(userCourse.getCourse().getId());
+        Long[] result = QuestionUtils.getNextId(lessonAndQuiz, userCourse);
+        UserCourse entity = userCourseRepository.getOne(userCourse.getId());
+        if (result != null) {
+            if (entity.getCurrentLessonId() < result[0]) {
+                entity.setCurrentLessonId(result[0]);
+                userCourse.getCurrentLesson().setId(result[0]);
+            }
+            if (entity.getCurrentQuizId() < result[1]) {
+                entity.setCurrentQuizId(result[1]);
+                userCourse.getCurrentQuiz().setId(result[1]);
+
+            }
+        }
+        userCourseRepository.save(entity);
+    }
+
+
+    private List<Object> getAllLessonAndQuiz(Long courseId) {
+        List<SectionDTO> courseSection = getCourseSection(courseId);
+        List<Object> objects = new ArrayList<>();
+        courseSection.forEach(section -> {
+            objects.addAll(section.getLessons());
+            if (section.getQuiz() != null) {
+                objects.add(section.getQuiz());
+            }
+        });
+        return objects;
+    }
+
+
+    private List<SectionDTO> getCourseSection(Long courseId) {
+        return sectionRepository.getAllSectionByCourseId(courseId).stream().map(tuple -> {
+            SectionDTO sectionDTO = new SectionDTO();
+            sectionDTO.setId((Long) tuple.get("id"));
+            sectionDTO.setLessons(getLessonDTO(sectionDTO.getId()));
+            sectionDTO.setQuiz(getQuizDTO((Long) tuple.get("quizId")));
+            return sectionDTO;
+        }).collect(Collectors.toList());
+    }
+
+
+    private List<LessonDTO> getLessonDTO(Long sectionId) {
+        return lessonRepository.findAllLessonBySectionId(sectionId).stream().map(tuple -> {
+            LessonDTO lessonDTO = new LessonDTO();
+            lessonDTO.setId((Long) tuple.get("id"));
+            return lessonDTO;
+        }).collect(Collectors.toList());
+    }
+
+    private QuizDTO getQuizDTO(Long quizId) {
+        return quizRepository.getQuizDetail(quizId).stream().map(tuple -> {
+            QuizDTO quizDTO = new QuizDTO();
+            quizDTO.setId((Long) tuple.get("id"));
+            return quizDTO;
+        }).findFirst().orElse(new QuizDTO());
+    }
+
 
     @Override
     public QuizDTO insertOrUpdate(QuizDTO quizDTO) {
@@ -83,7 +172,4 @@ public class QuizServiceImpl implements QuizService {
         return passQuiz;
     }
 
-//    private void goToNextLesson(UserCourseDTO userCourse) {
-//        userCourseService.goToNextLesson(userCourse);
-//    }
 }

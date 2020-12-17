@@ -49,4 +49,22 @@ public interface UserCourseRepository extends JpaRepository<UserCourse, Long>, J
             " FROM UserCourse uc" +
             " WHERE uc.userId = :userId AND uc.courseId = :courseId")
     List<Tuple> getDetailByCourseIdAndUserId(@Param("courseId") Long courseId, @Param("userId") Long userId);
+
+
+    @Query(value = " SELECT  uc.id as id, " +
+            "uc.userId as userId, " +
+            "uc.courseId as courseId, " +
+            "uc.currentLessonId as currentLessonId " +
+            " FROM UserCourse uc" +
+            " WHERE uc.id = :userCourseId")
+    List<Tuple> getUserCourseByUserCourseId(@Param("userCourseId") Long userCourseId);
+
+
+    @Query(value = " SELECT uc.courseComment as  courseComment, " +
+            "u.imageUrl as imageUrl, " +
+            "uc.courseRating as courseRating " +
+            "FROM UserCourse uc " +
+            "         JOIN User u ON u.id = uc.userId " +
+            "WHERE uc.courseId= :userCourseId")
+    List<Tuple> getUserComments(@Param("userCourseId") Long userCourseId);
 }

@@ -20,6 +20,10 @@ public class UserCourseDTO extends BaseDTO {
     private LessonDTO currentLesson;
     private QuizDTO currentQuiz;
     private int process;
+    private String courseComment;
+    private String instructorComment;
+    private Float courseRating;
+    private Float instructorRating;
     private UserCourse.PaymentStatus paymentStatus;
 
     @JsonFormat(pattern = "MMM dd, yyyy hh:mm:ss a")

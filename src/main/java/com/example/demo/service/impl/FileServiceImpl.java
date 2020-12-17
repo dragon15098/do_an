@@ -32,12 +32,11 @@ import static com.example.demo.configuration.Constants.*;
 @Service
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
-    private final String filePath = "F:\\Resource";
     private final Path fileStorageLocation;
 
     @Autowired
     public FileServiceImpl() {
-        this.fileStorageLocation = Paths.get(filePath+ "\\video").toAbsolutePath().normalize();
+        this.fileStorageLocation = Paths.get("F:\\Resource").toAbsolutePath().normalize();
         System.out.println(this.fileStorageLocation);
         try {
             Files.createDirectories(this.fileStorageLocation);
@@ -90,21 +89,21 @@ public class FileServiceImpl implements FileService {
     }
 
     private void extractFileFrame(String originalFilename) throws IOException {
-        FFmpegFrameGrabber g = new FFmpegFrameGrabber(this.filePath + "\\" + originalFilename);
-        String imageFileName = originalFilename.split("\\.")[0] + ".jpg";
-        try {
-            g.start();
-            for (int i = 0; i < 50; i++) {
-                Frame frame = g.grab();
-                BufferedImage bufferedImage = new Java2DFrameConverter().convert(frame);
-                File outputFile = new File("F:\\Resource\\image\\" + imageFileName);
-                ImageIO.write(bufferedImage, "jpg", outputFile);
-            }
-        } catch (Exception ignored) {
-
-        } finally {
-            g.stop();
-        }
+//        FFmpegFrameGrabber g = new FFmpegFrameGrabber(this.filePath + "\\" + originalFilename);
+//        String imageFileName = originalFilename.split("\\.")[0] + ".jpg";
+//        try {
+//            g.start();
+//            for (int i = 0; i < 50; i++) {
+//                Frame frame = g.grab();
+//                BufferedImage bufferedImage = new Java2DFrameConverter().convert(frame);
+//                File outputFile = new File("F:\\Resource\\image\\" + imageFileName);
+//                ImageIO.write(bufferedImage, "jpg", outputFile);
+//            }
+//        } catch (Exception ignored) {
+//
+//        } finally {
+//            g.stop();
+//        }
     }
 
     @Override
@@ -121,6 +120,7 @@ public class FileServiceImpl implements FileService {
                         .header(CONTENT_LENGTH, String.valueOf(fileSize))
                         .body(readByteRange(fullFileName, rangeStart, fileSize - 1)); // Read the object and convert it as bytes
             }
+            range = range.split("=")[1];
             String[] ranges = range.split("-");
             rangeStart = Long.parseLong(ranges[0]);
             if (ranges.length > 1) {

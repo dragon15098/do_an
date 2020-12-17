@@ -43,6 +43,8 @@ public class SectionServiceImpl implements SectionService {
             SectionDTO section = tupleToDTO(tuple);
             List<LessonDTO> lessons = lessonService.getAllLessonBySectionId(section.getId());
             section.setLessons(lessons);
+            QuizDTO quizDTO = quizService.getQuizDetail(section.getQuiz().getId());
+            section.setQuiz(quizDTO);
             return section;
         }).collect(Collectors.toList());
     }
