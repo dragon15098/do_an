@@ -9,7 +9,6 @@ public class InstructorDetailDTO extends BaseDTO {
     private String aboutMe;
     private int totalStudents;
     private int reviewCount;
-    private String imageLink;
     private String facebookLink;
     private String twitterLink;
     private int numberCourses;

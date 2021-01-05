@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.model.UserCart;
+import com.example.demo.model.dto.UserCartDTO;
 import com.example.demo.service.UserCartService;
 import com.example.demo.service.UserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,15 @@ public class UserCartController {
         return new ResponseEntity<>(userCart, HttpStatus.OK);
     }
 
-    @GetMapping("/get_user_cart/{id}")
-    public ResponseEntity<List<UserCart>> getUserCart(@PathVariable Long id) {
-        return new ResponseEntity<>(userCartService.findByUserId(id), HttpStatus.OK);
+    @GetMapping("/get_user_cart")
+    public ResponseEntity<List<UserCartDTO>> getUserCart() {
+        return new ResponseEntity<>(userCartService.getUserCart(), HttpStatus.OK);
     }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<UserCartDTO> deleteUserCart(@PathVariable Long id) {
+        return new ResponseEntity<>(userCartService.deleteUserCart(id), HttpStatus.OK);
+    }
+
 }

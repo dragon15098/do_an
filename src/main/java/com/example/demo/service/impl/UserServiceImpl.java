@@ -1,6 +1,5 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.model.UserRole;
 import com.example.demo.model.dto.InstructorDetailDTO;
@@ -16,8 +15,10 @@ import com.example.demo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Tuple;
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -83,6 +84,52 @@ public class UserServiceImpl implements UserService {
         return userDTO;
     }
 
+    @Override
+    public UserDTO updateProfile(MultipartFile fileImage, UserDTO userDTO) {
+        if (!fileImage.isEmpty()) {
+            String image = saveImage(fileImage);
+            updateUser(image, userDTO);
+            updateStudentInfo(userDTO.getStudentDetail());
+        }
+        return userDTO;
+    }
+
+    @Override
+    public UserDTO updateProfile(UserDTO userDTO) {
+        updateUser(null, userDTO);
+        updateStudentInfo(userDTO.getStudentDetail());
+        return userDTO;
+    }
+
+    private void updateUser(String image, UserDTO userDTO) {
+        User user = userRepository.getOne(userDTO.getId());
+        if (image != null) {
+            user.setImageUrl(image);
+        }
+        user.setEmail(userDTO.getEmail());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        userRepository.save(user);
+    }
+
+    private String saveImage(MultipartFile fileImage) {
+        try {
+            String uploadsDir = "F:/Resource/image/";
+            String orgName = fileImage.getOriginalFilename();
+            if (orgName != null) {
+                String newName = orgName.split("\\.")[0] + System.currentTimeMillis() + "." + orgName.split("\\.")[1];
+                String filePath = uploadsDir + newName;
+                File dest = new File(filePath);
+                fileImage.transferTo(dest);
+                return newName;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private void updateRole(UserDTO userDTO) {
         List<RoleDTO> roles = userDTO.getRoles();
         for (RoleDTO role : roles) {
@@ -108,6 +155,7 @@ public class UserServiceImpl implements UserService {
         userDTO.setUsername((String) tuple.get("username"));
         userDTO.setFirstName((String) tuple.get("firstName"));
         userDTO.setLastName((String) tuple.get("lastName"));
+        userDTO.setImageUrl((String) tuple.get("imageUrl"));
         userDTO.setEmail((String) tuple.get("email"));
         userDTO.setPhoneNumber((String) tuple.get("phoneNumber"));
 

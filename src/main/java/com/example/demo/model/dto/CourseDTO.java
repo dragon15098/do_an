@@ -22,6 +22,7 @@ public class CourseDTO extends BaseDTO {
     private Date createTime;
     private String description;
     private Long commentCount;
+    private Long courseSell;
     private CategoryDTO category;
     private Course.CourseStatus status;
     private List<SectionDTO> sections;

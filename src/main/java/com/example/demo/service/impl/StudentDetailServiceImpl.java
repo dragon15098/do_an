@@ -1,6 +1,8 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.model.StudentDetail;
 import com.example.demo.model.dto.StudentDetailDTO;
+import com.example.demo.model.helper.StudentDetailHelper;
 import com.example.demo.repository.StudentDetailRepository;
 import com.example.demo.service.StudentDetailService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +34,10 @@ public class StudentDetailServiceImpl implements StudentDetailService {
 
     @Override
     public StudentDetailDTO insertOrUpdate(StudentDetailDTO studentDetailDTO) {
+        StudentDetailHelper studentDetailHelper = new StudentDetailHelper(studentDetailDTO);
+        StudentDetail studentDetail = studentDetailHelper.studentDetailDTOToStudentDetail();
+        studentDetail= studentDetailRepository.save(studentDetail);
+        studentDetailDTO.setId(studentDetail.getId());
         return null;
     }
 }

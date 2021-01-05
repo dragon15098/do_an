@@ -91,6 +91,9 @@ public class QuizServiceImpl implements QuizService {
 
             }
         }
+        else{
+            entity.setStatus(UserCourse.UserCourseStatus.COMPLETE);
+        }
         userCourseRepository.save(entity);
     }
 

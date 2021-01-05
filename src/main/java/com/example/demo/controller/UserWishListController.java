@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.UserWishList;
+import com.example.demo.model.dto.UserWishListDTO;
 import com.example.demo.service.UserWishListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,13 +18,13 @@ public class UserWishListController {
     UserWishListService userWishListService;
 
     @PostMapping("/create")
-    public ResponseEntity<UserWishList> insert(@RequestBody UserWishList userWishList) {
-        userWishList = userWishListService.addNewUserWishList(userWishList);
-        return new ResponseEntity<>(userWishList, HttpStatus.OK);
+    public ResponseEntity<UserWishListDTO> insert(@RequestBody UserWishListDTO userWishListDTO) {
+        userWishListDTO = userWishListService.addNewUserWishList(userWishListDTO);
+        return new ResponseEntity<>(userWishListDTO, HttpStatus.OK);
     }
 
     @GetMapping("/get_user_wish_list/{id}")
-    public ResponseEntity<List<UserWishList>> getUserWishList(@PathVariable Long id) {
+    public ResponseEntity<List<UserWishListDTO>> getUserWishList(@PathVariable Long id) {
         return new ResponseEntity<>(userWishListService.getUserWishListByUserId(id), HttpStatus.OK);
     }
 }

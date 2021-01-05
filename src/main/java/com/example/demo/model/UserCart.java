@@ -11,14 +11,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "user_cart")
 public class UserCart extends BaseModel {
+	private Long userId;
 
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	@JsonIgnoreProperties({"roles"})
-	private User user;
-
-	@ManyToOne
-	@JoinColumn(name = "course_id")
-	@JsonIgnoreProperties({"lessons", "sections", "instructor"})
-	private Course course;
+	private Long courseId;
 }

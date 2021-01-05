@@ -9,33 +9,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class InstructorDetailServiceImpl implements InstructorDetailService {
     @Autowired
     InstructorDetailRepository instructorDetailRepository;
-
-    @Override
-    public InstructorDetailDTO getInstructorDetail(Long instructorId) {
-        Optional<InstructorDetailDTO> instructorDetail = instructorDetailRepository.getDetailById(instructorId).stream().map(tuple -> {
-            InstructorDetailDTO instructorDetailDTO = new InstructorDetailDTO();
-            instructorDetailDTO.setId((Long) tuple.get("id"));
-            instructorDetailDTO.setAboutMe((String) tuple.get("aboutMe"));
-            instructorDetailDTO.setTotalStudents((Integer) tuple.get("totalStudents"));
-            instructorDetailDTO.setReviewCount((Integer) tuple.get("reviewCount"));
-            instructorDetailDTO.setImageLink((String) tuple.get("imageLink"));
-            instructorDetailDTO.setFacebookLink((String) tuple.get("facebookLink"));
-            instructorDetailDTO.setTwitterLink((String) tuple.get("twitterLink"));
-            instructorDetailDTO.setNumberCourses((Integer) tuple.get("numberCourses"));
-            instructorDetailDTO.setRatings((Float) tuple.get("ratings"));
-            instructorDetailDTO.setAchievement((String) tuple.get("achievement"));
-            instructorDetailDTO.setYoutubeLink((String) tuple.get("youtubeLink"));
-            return instructorDetailDTO;
-        }).findFirst();
-        return instructorDetail.orElse(new InstructorDetailDTO());
-    }
+//
+//    @Override
+//    public InstructorDetailDTO getInstructorDetail(Long instructorId) {
+//        Optional<InstructorDetailDTO> instructorDetail = instructorDetailRepository.getDetailById(instructorId).stream().map(tuple -> {
+//            instructorDetailDTO.setNumberCourses(Integer.parseInt(tuple.get("numberCourses").toString()));
+//            instructorDetailDTO.setRatings(Float.parseFloat(tuple.get("instructorRating").toString()));
+//            return instructorDetailDTO;
+//        }).findFirst();
+//        return instructorDetail.orElse(new InstructorDetailDTO());
+//    }
 
     @Override
     public InstructorDetailDTO insertOrUpdate(InstructorDetailDTO instructorDetailDTO) {
@@ -45,4 +33,34 @@ public class InstructorDetailServiceImpl implements InstructorDetailService {
         instructorDetailDTO.setId(instructorDetail.getId());
         return instructorDetailDTO;
     }
+
+    @Override
+    public InstructorDetailDTO getInstructorDetail(Long instructorId) {
+        return this.instructorDetailRepository.getDetail(instructorId).stream()
+                .map(tuple -> {
+                    InstructorDetailDTO instructorDetailDTO = new InstructorDetailDTO();
+                    instructorDetailDTO.setId(Long.parseLong(tuple.get("id").toString()));
+                    instructorDetailDTO.setAboutMe((String) tuple.get("aboutMe"));
+                    instructorDetailDTO.setFacebookLink((String) tuple.get("facebookLink"));
+                    instructorDetailDTO.setTwitterLink((String) tuple.get("twitterLink"));
+                    instructorDetailDTO.setAchievement((String) tuple.get("achievement"));
+                    instructorDetailDTO.setYoutubeLink((String) tuple.get("youtubeLink"));
+                    instructorDetailDTO = getInstructorReview(instructorDetailDTO);
+                    return instructorDetailDTO;
+                }).findFirst().orElse(new InstructorDetailDTO());
+    }
+
+
+    public InstructorDetailDTO getInstructorReview(InstructorDetailDTO instructorDetailDTO) {
+        return this.instructorDetailRepository.getCourseDetail(instructorDetailDTO.getId()).stream()
+                .map(tuple -> {
+                    instructorDetailDTO.setTotalStudents(Integer.parseInt(tuple.get("totalStudents").toString()));
+                    instructorDetailDTO.setNumberCourses(Integer.parseInt(tuple.get("numberCourses").toString()));
+                    instructorDetailDTO.setReviewCount(Integer.parseInt(tuple.get("reviewCount").toString()));
+                    instructorDetailDTO.setRatings(Float.parseFloat(tuple.get("instructorRating").toString()));
+                    return instructorDetailDTO;
+                }).findFirst().orElse(instructorDetailDTO);
+    }
+
+
 }

@@ -15,13 +15,7 @@ import javax.persistence.Table;
 @Table(name = "user_wish_list")
 public class UserWishList extends BaseModel {
 
-	@ManyToOne
-	@JoinColumn(name = "user_id")
-	@JsonIgnoreProperties({"roles"})
-	private User user;
+	private Long userId;
 
-	@ManyToOne
-	@JoinColumn(name = "course_id")
-	@JsonIgnoreProperties({"lessons", "sections", "instructor"})
-	private Course course;
+	private Long courseId;
 }

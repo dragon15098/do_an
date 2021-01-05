@@ -13,13 +13,8 @@ import javax.persistence.Table;
 @Table(name = "instructor_detail")
 public class InstructorDetail extends BaseModel {
 	private String aboutMe;
-	private int totalStudents;
-	private int reviewCount;
-	private String imageLink;
 	private String facebookLink;
 	private String twitterLink;
 	private String youtubeLink;
-	private int numberCourses;
-	private float ratings;
 	private String achievement;
 }

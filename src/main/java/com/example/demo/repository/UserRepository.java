@@ -20,6 +20,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
                             "user.lastName as lastName, " +
                             "user.email as email, " +
                             "user.phoneNumber as phoneNumber, " +
+                            "user.imageUrl as imageUrl, " +
                             "user.instructorDetailId as instructorDetailId, " +
                             "user.studentDetailId as studentDetailId " +
                     " FROM User user" +
@@ -31,6 +32,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
                         "user.firstName as firstName, " +
                         "user.lastName as lastName, " +
                         "user.email as email, " +
+                        "user.imageUrl as imageUrl, " +
                         "user.phoneNumber as phoneNumber, " +
                         "user.instructorDetailId as instructorDetailId, " +
                         "user.studentDetailId as studentDetailId " +

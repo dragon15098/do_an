@@ -13,6 +13,7 @@ public class StudentDetailHelper {
 
     public StudentDetail studentDetailDTOToStudentDetail() {
         StudentDetail studentDetail = new StudentDetail();
+        studentDetail.setId(studentDetailDTO.getId());
         studentDetail.setGrade(studentDetailDTO.getGrade());
         studentDetail.setSchool(studentDetailDTO.getSchool());
         return studentDetail;

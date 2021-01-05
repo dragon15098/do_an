@@ -17,8 +17,6 @@ import java.util.List;
 public class Course extends BaseModel {
     private String title;
     private String imageDescriptionLink;
-    private Float rating;
-    private Long ratingCount;
     private Long instructorId;
     private Long categoryId;
 
@@ -30,7 +28,6 @@ public class Course extends BaseModel {
 
     private String description;
 
-    private Long commentCount;
     private Float price;
 
     public enum CourseStatus {

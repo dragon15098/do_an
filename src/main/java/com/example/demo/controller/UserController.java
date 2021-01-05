@@ -2,16 +2,17 @@ package com.example.demo.controller;
 
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
-import com.example.demo.model.UserCourse;
 import com.example.demo.model.dto.UserDTO;
 import com.example.demo.service.UserRoleService;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -50,7 +51,8 @@ public class UserController {
             Long userId = Long.parseLong(auth.getPrincipal().toString());
             UserDTO user = userService.getDetail(userId);
             return new ResponseEntity<>(user, HttpStatus.OK);
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return new ResponseEntity<>(new UserDTO(), HttpStatus.OK);
     }
@@ -68,5 +70,16 @@ public class UserController {
     @GetMapping("/{userId}")
     public ResponseEntity<UserDTO> getUserDetail(@PathVariable Long userId) {
         return new ResponseEntity<>(userService.getDetail(userId), HttpStatus.OK);
+    }
+
+    @PostMapping("/update_profile")
+    public ResponseEntity<UserDTO> uploadProfile(@RequestPart("user") UserDTO userDTO, @RequestPart MultipartFile file) {
+        return new ResponseEntity<>(userService.updateProfile(file, userDTO), HttpStatus.OK);
+    }
+
+
+    @PostMapping("/update_profile_without_image")
+    public ResponseEntity<UserDTO> uploadProfile(@RequestPart("user") UserDTO userDTO) {
+        return new ResponseEntity<>(userService.updateProfile(userDTO), HttpStatus.OK);
     }
 }
