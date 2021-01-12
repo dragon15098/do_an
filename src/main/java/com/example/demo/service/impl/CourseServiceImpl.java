@@ -6,6 +6,7 @@ import com.example.demo.model.dto.CourseDTO;
 import com.example.demo.model.dto.Page;
 import com.example.demo.model.dto.UserDTO;
 import com.example.demo.model.helper.CourseHelper;
+import com.example.demo.model.helper.RandomHelper;
 import com.example.demo.repository.CourseRepository;
 import com.example.demo.service.CategoryService;
 import com.example.demo.service.CourseService;
@@ -82,7 +83,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Page<CourseDTO> getCourseHottest(Integer pageNumber, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, "numberSells"));
-        List<Tuple> topSell = courseRepository.getTopSell(pageable);
+        List<Tuple> topSell = courseRepository.getCourseFilter(pageable);
         List<CourseDTO> data = topSell.stream().map(this::tupleToDTO).collect(Collectors.toList());
         Page<CourseDTO> response = new Page<>();
         response.setData(data);
@@ -125,7 +126,7 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Page<CourseDTO> getCourseNewest(Integer pageNumber, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.Direction.DESC, "createTime");
-        List<CourseDTO> data = courseRepository.getNewest(pageable)
+        List<CourseDTO> data = courseRepository.getCourseFilter(pageable)
                 .stream().map(this::tupleToDTO).collect(Collectors.toList());
         Page<CourseDTO> page = new Page<>();
         page.setPageSize(pageSize);
@@ -137,20 +138,32 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public Page<CourseDTO> getSomeRandomCourse(Integer pageNumber, Integer pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        List<CourseDTO> data = courseRepository.getRandomCourse(pageable)
+        List<CourseDTO> data = courseRepository.getCourseFilter(pageable)
                 .stream().map(this::tupleToDTO).collect(Collectors.toList());
+        RandomHelper randomHelper = new RandomHelper(data);
+        List<CourseDTO> randomCourseDTO = randomHelper.getRandomCourseDTO(pageSize);
         Page<CourseDTO> page = new Page<>();
         page.setPageSize(pageSize);
         page.setPageNumber(pageNumber);
-        page.setData(data);
+        page.setData(randomCourseDTO);
         return page;
     }
 
     @Override
     public List<CourseDTO> getCourseByFilter(List<Long> categoryId, String courseTitle) {
-        return courseRepository.getCourseByFilter(categoryId, "%" + courseTitle + "%")
+        if(courseTitle!=null){
+            courseTitle = "%" + courseTitle + "%";
+        }
+        else{
+            courseTitle = "%";
+        }
+        return courseRepository.getCourseByFilter(categoryId, courseTitle)
                 .stream()
-                .map(this::tupleToCourseDTO)
+                .map(tuple -> {
+                    CourseDTO courseDTO = tupleToCourseDTO(tuple);
+                    getCourseSellDetail(courseDTO);
+                    return courseDTO;
+                })
                 .collect(Collectors.toList());
     }
 

@@ -1,11 +1,13 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.model.*;
+import com.example.demo.model.LessonQuestion;
+import com.example.demo.model.UserCourse;
 import com.example.demo.model.dto.*;
 import com.example.demo.model.helper.LessonQuestionHelper;
 import com.example.demo.repository.*;
 import com.example.demo.service.LessonAnswerService;
 import com.example.demo.service.LessonQuestionService;
+import com.example.demo.utils.QuestionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -97,7 +99,7 @@ public class LessonQuestionServiceImpl implements LessonQuestionService {
 
                 return userCourse;
             }).findFirst().orElse(new UserCourseDTO());
-            if (userCourseDTO.getCurrentLesson().getId().equals(lessonId)) {
+            if (userCourseDTO.getCurrentLesson().getId() != null && userCourseDTO.getCurrentLesson().getId().equals(lessonId)) {
                 goToNextLesson(userCourseDTO);
                 answerResult.setNextLessonId(userCourseDTO.getCurrentLesson().getId());
                 answerResult.setNextQuizId(userCourseDTO.getCurrentQuiz().getId());
@@ -137,19 +139,12 @@ public class LessonQuestionServiceImpl implements LessonQuestionService {
 
     private void goToNextLesson(UserCourseDTO userCourse) {
         List<Object> lessonAndQuiz = getAllLessonAndQuiz(userCourse.getCourse().getId());
-        Long[] result = getNextId(lessonAndQuiz, userCourse);
+        Long[] result = QuestionUtils.getNextId(lessonAndQuiz, userCourse);
         UserCourse entity = userCourseRepository.getOne(userCourse.getId());
-        if (result != null) {
-            if (entity.getCurrentLessonId() < result[0]) {
-                entity.setCurrentLessonId(result[0]);
-                userCourse.getCurrentLesson().setId(result[0]);
-            }
-            if (entity.getCurrentQuizId() < result[1]) {
-                entity.setCurrentQuizId(result[1]);
-                userCourse.getCurrentQuiz().setId(result[1]);
-
-            }
-        }
+        entity.setCurrentLessonId(result[0]);
+        userCourse.getCurrentLesson().setId(result[0]);
+        entity.setCurrentQuizId(result[1]);
+        userCourse.getCurrentQuiz().setId(result[1]);
         userCourseRepository.save(entity);
     }
 
@@ -165,26 +160,6 @@ public class LessonQuestionServiceImpl implements LessonQuestionService {
         return objects;
     }
 
-    private Long[] getNextId(List<Object> objects, UserCourseDTO userCourse) {
-        Long nextLessonId = null;
-        Long nextQuizId = null;
-        Long currentLessonId = userCourse.getCurrentLesson().getId();
-        for (int i = 0; i < objects.size() - 1; i++) {
-            Object current = objects.get(i);
-            if (current instanceof LessonDTO && currentLessonId.equals(((LessonDTO) current).getId())) {
-                Object next = objects.get(i + 1);
-                if (next instanceof LessonDTO) {
-                    nextLessonId = ((LessonDTO) next).getId();
-                    nextQuizId = userCourse.getCurrentQuiz().getId();
-                } else if (next instanceof QuizDTO) {
-                    nextLessonId = userCourse.getCurrentLesson().getId();
-                    nextQuizId = ((QuizDTO) next).getId();
-                }
-                return new Long[]{nextLessonId, nextQuizId};
-            }
-        }
-        return null;
-    }
 
     @Override
     public LessonQuestionDTO insertOrUpdate(LessonQuestionDTO lessonQuestionDTO) {

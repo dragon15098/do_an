@@ -66,8 +66,9 @@ public class QuizServiceImpl implements QuizService {
 
                 return userCourse;
             }).findFirst().orElse(new UserCourseDTO());
-            if (userCourseDTO.getCurrentQuiz().getId().equals(quizId)) {
-                goToNextLesson(userCourseDTO);
+            if (userCourseDTO.getCurrentQuiz().getId() != null &&
+                    userCourseDTO.getCurrentQuiz().getId().equals(quizId)) {
+                goToNextLesson(answerResultDTO, userCourseDTO);
                 answerResultDTO.setNextLessonId(userCourseDTO.getCurrentLesson().getId());
                 answerResultDTO.setNextQuizId(userCourseDTO.getCurrentQuiz().getId());
             }
@@ -75,28 +76,26 @@ public class QuizServiceImpl implements QuizService {
         return answerResultDTO;
     }
 
-
-    private void goToNextLesson(UserCourseDTO userCourse) {
+    private void goToNextLesson(AnswerResultDTO answerResultDTO, UserCourseDTO userCourse) {
         List<Object> lessonAndQuiz = getAllLessonAndQuiz(userCourse.getCourse().getId());
         Long[] result = QuestionUtils.getNextId(lessonAndQuiz, userCourse);
         UserCourse entity = userCourseRepository.getOne(userCourse.getId());
-        if (result != null) {
-            if (entity.getCurrentLessonId() < result[0]) {
-                entity.setCurrentLessonId(result[0]);
-                userCourse.getCurrentLesson().setId(result[0]);
-            }
-            if (entity.getCurrentQuizId() < result[1]) {
-                entity.setCurrentQuizId(result[1]);
-                userCourse.getCurrentQuiz().setId(result[1]);
-
-            }
-        }
-        else{
+        Long nextLessonId = result[0];
+        Long nextQuizId = result[1];
+        entity.setCurrentLessonId(nextLessonId);
+        userCourse.getCurrentLesson().setId(nextLessonId);
+        entity.setCurrentQuizId(nextQuizId);
+        userCourse.getCurrentQuiz().setId(nextQuizId);
+        if (isTheLastQuiz(nextLessonId)) {
+            answerResultDTO.setUserCourseStatus(UserCourse.UserCourseStatus.COMPLETE);
             entity.setStatus(UserCourse.UserCourseStatus.COMPLETE);
         }
         userCourseRepository.save(entity);
     }
 
+    private boolean isTheLastQuiz(Long nextLessonId) {
+        return nextLessonId == null;
+    }
 
     private List<Object> getAllLessonAndQuiz(Long courseId) {
         List<SectionDTO> courseSection = getCourseSection(courseId);

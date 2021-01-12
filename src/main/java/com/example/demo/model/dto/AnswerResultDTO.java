@@ -2,6 +2,7 @@ package com.example.demo.model.dto;
 
 import java.util.List;
 
+import com.example.demo.model.UserCourse;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,4 +14,5 @@ public class AnswerResultDTO extends BaseDTO{
     private Boolean totalResult;
     private Long nextQuizId;
     private Long nextLessonId;
+    private UserCourse.UserCourseStatus userCourseStatus;
 }

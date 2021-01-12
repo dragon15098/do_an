@@ -58,89 +58,52 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
     List<Tuple> getCourseByTitle(@Param("title") String title);
 
 
-    @Query(value = " SELECT c.id as id,  " +
-            "       c.title       as title,  " +
-            "       c.description as description,  " +
-            "       c.image_description_link as imageDescriptionLink,  " +
-            "       c.price       as price,  " +
-            "       COUNT(uc.id)  as numberSells," +
-            "       COUNT(uc.course_comment) as courseComment, " +
-            "       AVG(uc.course_rating) as  rating, " +
-            "       COUNT(uc.course_rating) as  courseRating " +
-            "FROM course c JOIN user_course  uc  " +
-            "              ON uc.course_id = c.id  " +
-            "WHERE uc.payment_status = 'COMPLETE' AND c.status='APPROVED' " +
+    @Query(value = " SELECT c.id                                                  as id, " +
+            "       c.title                                                       as title, " +
+            "       c.description                                                 as description, " +
+            "       c.image_description_link                                      as imageDescriptionLink, " +
+            "       c.price                                                       as price, " +
+            "       c.create_time                                                 as createTime,  " +
+            "       COUNT(uc.id)                                                  as numberSells, " +
+            "       COUNT(uc.course_comment)                                      as courseComment, " +
+            "       IF(AVG(course_rating) IS NULL, 5, AVG(course_rating))         as rating, " +
+            "       COUNT(uc.course_rating)                                       as courseRating " +
+            "FROM course c " +
+            "         LEFT JOIN user_course uc ON uc.course_id = c.id " +
+            "WHERE c.status = 'APPROVED' " +
             "GROUP BY(c.id) ",
             countQuery = " SELECT COUNT(*)  " +
-                    "FROM course c JOIN user_course  uc  " +
-                    "              ON uc.course_id = c.id  " +
-                    "WHERE uc.payment_status = 'COMPLETE' AND c.status='APPROVED'  " +
-                    "GROUP BY(c.id) ",
+                    "FROM (SELECT c.id                                                    as id, " +
+                    "       c.title                                                       as title, " +
+                    "       c.description                                                 as description, " +
+                    "       c.image_description_link                                      as imageDescriptionLink, " +
+                    "       c.price                                                       as price, " +
+                    "       c.create_time                                                 as createTime,  " +
+                    "       COUNT(uc.id)                                                  as numberSells, " +
+                    "       COUNT(uc.course_comment)                                      as courseComment, " +
+                    "       IF(AVG(course_rating) IS NULL, 5, AVG(course_rating))         as rating, " +
+                    "       COUNT(uc.course_rating)                                       as courseRating " +
+                    "FROM course c " +
+                    "         LEFT JOIN user_course uc ON uc.course_id = c.id " +
+                    "WHERE c.status = 'APPROVED' " +
+                    "GROUP BY(c.id)) ",
             nativeQuery = true)
-    List<Tuple> getTopSell(Pageable pageable);
+    List<Tuple> getCourseFilter(Pageable pageable);
 
-    @Query(value = " SELECT c.id as id,  " +
+    @Query(value = " SELECT c.id  as id,  " +
             "       c.title       as title,  " +
             "       c.description as description,  " +
             "       c.image_description_link as imageDescriptionLink,  " +
             "       c.price       as price,  " +
-            "       c.create_time       as createTime,  " +
-            "       COUNT(uc.id)  as numberSells," +
-            "       COUNT(uc.course_comment) as courseComment, " +
-            "       AVG(uc.course_rating) as  rating, " +
-            "       COUNT(uc.course_rating) as  courseRating " +
-            "FROM course c JOIN user_course  uc  " +
+            "       c.create_time as createTime,  " +
+            "       c.status      as status " +
+            " FROM course c JOIN user_course  uc  " +
             "              ON uc.course_id = c.id  " +
-            "WHERE uc.payment_status = 'COMPLETE' AND c.status='APPROVED'  " +
-            "GROUP BY(c.id) ",
-            countQuery = " SELECT COUNT(*)  " +
-                    "FROM course c JOIN user_course  uc  " +
-                    "              ON uc.course_id = c.id  " +
-                    "WHERE uc.payment_status = 'COMPLETE' AND c.status='APPROVED'  " +
-                    "GROUP BY(c.id) ",
+            "WHERE  c.status='APPROVED' " +
+            " AND c.category_id IN :categoryId AND c.title LIKE :courseTitle ",
             nativeQuery = true)
-    List<Tuple> getNewest(Pageable pageable);
-
-    @Query(value = " SELECT c.id as id,  " +
-            "       c.title       as title,  " +
-            "       c.description as description,  " +
-            "       c.image_description_link as imageDescriptionLink,  " +
-            "       c.price       as price,  " +
-            "       c.create_time       as createTime,  " +
-            "       COUNT(uc.id)  as numberSells," +
-            "       COUNT(uc.course_comment) as courseComment, " +
-            "       AVG(uc.course_rating) as  rating, " +
-            "       COUNT(uc.course_rating) as  courseRating " +
-            "FROM course c JOIN user_course  uc  " +
-            "              ON uc.course_id = c.id  " +
-            "WHERE uc.payment_status = 'COMPLETE' AND c.status='APPROVED'  " +
-            "GROUP BY(c.id) ",
-            countQuery = " SELECT COUNT(*)  " +
-                    "FROM course c JOIN user_course  uc  " +
-                    "              ON uc.course_id = c.id  " +
-                    "WHERE uc.payment_status = 'COMPLETE' AND c.status='APPROVED'  " +
-                    "GROUP BY(c.id) ",
-            nativeQuery = true)
-    List<Tuple> getRandomCourse(Pageable pageable);
-
-
-    @Query(value = " SELECT c.id as id,  " +
-            "       c.title       as title,  " +
-            "       c.description as description,  " +
-            "       c.image_description_link as imageDescriptionLink,  " +
-            "       c.price       as price,  " +
-            "       c.create_time       as createTime,  " +
-            "       COUNT(uc.id)  as numberSells," +
-            "       COUNT(uc.course_comment) as courseComment, " +
-            "       AVG(uc.course_rating) as  rating, " +
-            "       COUNT(uc.course_rating) as  courseRating " +
-            "FROM course c JOIN user_course  uc  " +
-            "              ON uc.course_id = c.id  " +
-            "WHERE uc.payment_status = 'COMPLETE' AND c.status='APPROVED' " +
-            " AND c.category_id IN :categoryId AND c.title LIKE :courseTitle  " +
-            "GROUP BY(c.id) ",
-            nativeQuery = true)
-    List<Tuple> getCourseByFilter(@Param("categoryId") List<Long> categoryId, @Param("courseTitle") String courseTitle);
+    List<Tuple> getCourseByFilter(@Param("categoryId") List<Long> categoryId,
+                                  @Param("courseTitle") String courseTitle);
 
 
     @Query(value = " SELECT c.id             as id, " +

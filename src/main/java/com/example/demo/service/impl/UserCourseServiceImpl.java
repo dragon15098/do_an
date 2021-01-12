@@ -37,6 +37,7 @@ public class UserCourseServiceImpl implements UserCourseService {
         userCourse.setPaymentDate(calendar.getTime());
         userCourse.setCreateDate(calendar.getTime());
         userCourse.setProcess(0);
+        userCourse.setCreateDate(new Date());
         userCourse.setCurrentLessonId(lessonService.getFistLessonIdByCourseId(userCourse.getCourseId()).getId());
         userCourse = userCourseRepository.save(userCourse);
         userCourseDTO.setId(userCourse.getId());
@@ -99,7 +100,7 @@ public class UserCourseServiceImpl implements UserCourseService {
             lesson.setId(lessonId);
             return lesson;
         }
-        return null;
+        return new LessonDTO();
     }
 
     private QuizDTO getQuizFromTuple(Tuple tuple) {
@@ -109,29 +110,32 @@ public class UserCourseServiceImpl implements UserCourseService {
             quiz.setId(quizId);
             return quiz;
         }
-        return null;
+        return new QuizDTO();
     }
 
     @Override
     public UserCourseDTO getUserCourseByCourseId(Long courseId) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         try {
-            Long userId = Long.parseLong(auth.getPrincipal().toString());
-            return userCourseRepository.getDetailByCourseIdAndUserId(courseId, userId).stream().map(tuple -> {
-                UserCourseDTO userCourse = new UserCourseDTO();
-                // create course
-                CourseDTO course = new CourseDTO();
-                course.setId((Long) tuple.get("courseId"));
+            if (!auth.getPrincipal().toString().equals("anonymousUser")) {
 
-                userCourse.setId((Long) tuple.get("id"));
-                userCourse.setCourse(course);
+                Long userId = Long.parseLong(auth.getPrincipal().toString());
+                return userCourseRepository.getDetailByCourseIdAndUserId(courseId, userId).stream().map(tuple -> {
+                    UserCourseDTO userCourse = new UserCourseDTO();
+                    // create course
+                    CourseDTO course = new CourseDTO();
+                    course.setId((Long) tuple.get("courseId"));
 
-                userCourse.setCurrentLesson(getLessonFromTuple(tuple));
-                userCourse.setCurrentQuiz(getQuizFromTuple(tuple));
+                    userCourse.setId((Long) tuple.get("id"));
+                    userCourse.setCourse(course);
 
-                userCourse.setProcess((Integer) tuple.get("process"));
-                return userCourse;
-            }).findFirst().orElse(new UserCourseDTO());
+                    userCourse.setCurrentLesson(getLessonFromTuple(tuple));
+                    userCourse.setCurrentQuiz(getQuizFromTuple(tuple));
+
+                    userCourse.setProcess((Integer) tuple.get("process"));
+                    return userCourse;
+                }).findFirst().orElse(new UserCourseDTO());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

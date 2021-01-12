@@ -48,9 +48,11 @@ public class UserController {
     public ResponseEntity<UserDTO> getCurrentUserDetail() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         try {
-            Long userId = Long.parseLong(auth.getPrincipal().toString());
-            UserDTO user = userService.getDetail(userId);
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            if (!auth.getPrincipal().equals("anonymousUser")) {
+                Long userId = Long.parseLong(auth.getPrincipal().toString());
+                UserDTO user = userService.getDetail(userId);
+                return new ResponseEntity<>(user, HttpStatus.OK);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

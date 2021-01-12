@@ -67,7 +67,7 @@ public class CourseController {
 
     @GetMapping("/get_course_by_filter")
     public ResponseEntity<List<CourseDTO>> searchCourse(@RequestParam("categories") List<Long> categoryId,
-                                                        @RequestParam("name") String courseName) {
+                                                        @RequestParam(value = "name", required = false) String courseName) {
         return new ResponseEntity<>(courseService.getCourseByFilter(categoryId, courseName), HttpStatus.OK);
     }
 
