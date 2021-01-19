@@ -82,6 +82,7 @@ public class QuizServiceImpl implements QuizService {
         UserCourse entity = userCourseRepository.getOne(userCourse.getId());
         Long nextLessonId = result[0];
         Long nextQuizId = result[1];
+        Long process = result[2];
         entity.setCurrentLessonId(nextLessonId);
         userCourse.getCurrentLesson().setId(nextLessonId);
         entity.setCurrentQuizId(nextQuizId);
@@ -90,6 +91,7 @@ public class QuizServiceImpl implements QuizService {
             answerResultDTO.setUserCourseStatus(UserCourse.UserCourseStatus.COMPLETE);
             entity.setStatus(UserCourse.UserCourseStatus.COMPLETE);
         }
+        entity.setProcess(Math.round(process));
         userCourseRepository.save(entity);
     }
 

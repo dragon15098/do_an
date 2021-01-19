@@ -38,6 +38,6 @@ public class StudentDetailServiceImpl implements StudentDetailService {
         StudentDetail studentDetail = studentDetailHelper.studentDetailDTOToStudentDetail();
         studentDetail= studentDetailRepository.save(studentDetail);
         studentDetailDTO.setId(studentDetail.getId());
-        return null;
+        return studentDetailDTO;
     }
 }

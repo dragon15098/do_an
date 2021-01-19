@@ -118,8 +118,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDTO approveCourse(CourseDTO courseDTO) {
-        courseRepository.approveCourse(courseDTO.getId(), Course.CourseStatus.APPROVED);
+        courseRepository.approveCourse(courseDTO.getId(),courseDTO.getPrice(), Course.CourseStatus.APPROVED);
         courseDTO.setStatus(Course.CourseStatus.APPROVED);
+        courseDTO.setPrice(courseDTO.getPrice());
         return courseDTO;
     }
 
@@ -151,10 +152,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseDTO> getCourseByFilter(List<Long> categoryId, String courseTitle) {
-        if(courseTitle!=null){
+        if (courseTitle != null) {
             courseTitle = "%" + courseTitle + "%";
-        }
-        else{
+        } else {
             courseTitle = "%";
         }
         return courseRepository.getCourseByFilter(categoryId, courseTitle)

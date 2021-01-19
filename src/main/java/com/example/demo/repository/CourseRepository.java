@@ -97,7 +97,7 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
             "       c.price       as price,  " +
             "       c.create_time as createTime,  " +
             "       c.status      as status " +
-            " FROM course c JOIN user_course  uc  " +
+            " FROM course c LEFT JOIN user_course  uc  " +
             "              ON uc.course_id = c.id  " +
             "WHERE  c.status='APPROVED' " +
             " AND c.category_id IN :categoryId AND c.title LIKE :courseTitle ",
@@ -163,6 +163,6 @@ public interface CourseRepository extends JpaRepository<Course, Long>, JpaSpecif
 
     @Transactional
     @Modifying
-    @Query(value = " UPDATE Course SET status = :approved WHERE id = :id")
-    void approveCourse(Long id, Course.CourseStatus approved);
+    @Query(value = " UPDATE Course SET status = :approved, price = :price WHERE id = :id")
+    void approveCourse(Long id, Float price, Course.CourseStatus approved);
 }

@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.Tuple;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
@@ -21,5 +22,8 @@ public interface LessonAnswerRepository  extends JpaRepository<LessonAnswer, Lon
                     " FROM LessonAnswer ls" +
                     " WHERE ls.lessonQuestionId = :lessonQuestionId ")
     List<Tuple> findAllByLessonQuestionId(@Param("lessonQuestionId") Long lessonQuestionId);
+
+    @Transactional
+    void deleteByLessonQuestionId(Long lessonQuestionId);
 
 }

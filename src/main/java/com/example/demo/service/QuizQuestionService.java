@@ -10,4 +10,6 @@ public interface QuizQuestionService {
     List<QuizQuestionDTO> getQuizQuestionWithCorrectAnswer(Long quizId);
 
     List<QuizQuestionDTO> insertOrUpdate(List<QuizQuestionDTO> quizQuestionDTOs);
+
+    void deleteById(Long id);
 }

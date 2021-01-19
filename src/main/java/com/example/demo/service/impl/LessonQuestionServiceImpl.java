@@ -145,6 +145,7 @@ public class LessonQuestionServiceImpl implements LessonQuestionService {
         userCourse.getCurrentLesson().setId(result[0]);
         entity.setCurrentQuizId(result[1]);
         userCourse.getCurrentQuiz().setId(result[1]);
+        entity.setProcess(Math.round(result[2]));
         userCourseRepository.save(entity);
     }
 
@@ -195,6 +196,20 @@ public class LessonQuestionServiceImpl implements LessonQuestionService {
     public List<LessonQuestionDTO> insertOrUpdate(List<LessonQuestionDTO> lessonQuestionDTOs) {
         lessonQuestionDTOs.forEach(this::insertOrUpdate);
         return lessonQuestionDTOs;
+    }
+
+    @Override
+    public void deleteLessonQuestionById(Long questionId) {
+        deleteAnswerByQuestionId(questionId);
+        deleteQuestionById(questionId);
+    }
+
+    private void deleteAnswerByQuestionId(Long questionId) {
+        lessonAnswerService.deleteAnswerByQuestionId(questionId);
+    }
+
+    private void deleteQuestionById(Long questionId) {
+        lessonQuestionRepository.deleteById(questionId);
     }
 
 

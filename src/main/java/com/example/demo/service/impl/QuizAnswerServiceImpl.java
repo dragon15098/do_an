@@ -41,4 +41,9 @@ public class QuizAnswerServiceImpl implements QuizAnswerService {
         return quizAnswerDTOs;
     }
 
+    @Override
+    public void deleteAnswerByQuestionId(Long questionId) {
+        quizAnswerRepository.deleteQuizAnswerByQuizQuestionId(questionId);
+    }
+
 }

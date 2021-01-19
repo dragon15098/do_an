@@ -21,6 +21,7 @@ public class UserHelper {
         user.setLastName(userDTO.getLastName());
         user.setEmail(userDTO.getEmail());
         user.setPhoneNumber(userDTO.getPhoneNumber());
+        user.setImageUrl(userDTO.getImageUrl());
         return user;
     }
 }

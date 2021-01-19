@@ -27,4 +27,10 @@ public class LessonQuestionController {
     public ResponseEntity<AnswerResultDTO> checkLessonQuestion(@PathVariable Long courseId, @PathVariable Long lessonId, @RequestBody List<LessonAnswerDTO> lessonAnswers) {
         return new ResponseEntity<>(lessonQuestionService.checkLessonQuestion(courseId, lessonId, lessonAnswers), HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteLessonQuestion(@PathVariable Long id) {
+        lessonQuestionService.deleteLessonQuestionById(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

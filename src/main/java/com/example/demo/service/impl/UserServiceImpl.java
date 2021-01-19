@@ -1,5 +1,6 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.model.StudentDetail;
 import com.example.demo.model.User;
 import com.example.demo.model.UserRole;
 import com.example.demo.model.dto.InstructorDetailDTO;
@@ -88,24 +89,25 @@ public class UserServiceImpl implements UserService {
     public UserDTO updateProfile(MultipartFile fileImage, UserDTO userDTO) {
         if (!fileImage.isEmpty()) {
             String image = saveImage(fileImage);
-            updateUser(image, userDTO);
-            updateStudentInfo(userDTO.getStudentDetail());
+            StudentDetailDTO studentDetailDTO = updateStudentInfo(userDTO.getStudentDetail());
+            updateUser(image, userDTO, studentDetailDTO);
         }
         return userDTO;
     }
 
     @Override
     public UserDTO updateProfile(UserDTO userDTO) {
-        updateUser(null, userDTO);
-        updateStudentInfo(userDTO.getStudentDetail());
+        StudentDetailDTO studentDetailDTO = updateStudentInfo(userDTO.getStudentDetail());
+        updateUser(null, userDTO, studentDetailDTO);
         return userDTO;
     }
 
-    private void updateUser(String image, UserDTO userDTO) {
+    private void updateUser(String image, UserDTO userDTO, StudentDetailDTO studentDetailDTO) {
         User user = userRepository.getOne(userDTO.getId());
         if (image != null) {
             user.setImageUrl(image);
         }
+        user.setStudentDetailId(studentDetailDTO.getId());
         user.setEmail(userDTO.getEmail());
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setFirstName(userDTO.getFirstName());

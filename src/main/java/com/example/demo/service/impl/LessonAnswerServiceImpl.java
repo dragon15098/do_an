@@ -43,4 +43,9 @@ public class LessonAnswerServiceImpl implements LessonAnswerService {
         lessonAnswerDTOs.forEach(this::insertOrUpdate);
         return lessonAnswerDTOs;
     }
+
+    @Override
+    public void deleteAnswerByQuestionId(Long questionId) {
+        lessonAnswerRepository.deleteByLessonQuestionId(questionId);
+    }
 }

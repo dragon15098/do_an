@@ -62,6 +62,21 @@ public class QuizQuestionServiceImpl implements QuizQuestionService {
         return quizQuestionDTOs;
     }
 
+    @Override
+    public void deleteById(Long id) {
+        deleteAnswerByQuestionId(id);
+        deleteQuestionById(id);
+    }
+
+    private void deleteQuestionById(Long id) {
+        quizQuestionRepository.deleteById(id);
+
+    }
+
+    private void deleteAnswerByQuestionId(Long id) {
+        quizAnswerService.deleteAnswerByQuestionId(id);
+    }
+
     private void updateCorrectAnswer(QuizQuestion quizQuestion, QuizQuestionDTO quizQuestionDTO) {
         List<QuizAnswerDTO> quizAnswerDTOS = quizQuestionDTO.getQuizAnswers();
         QuizAnswerDTO correctAnswer = quizAnswerDTOS.get(quizQuestionDTO.getCorrectAnswerPosition());

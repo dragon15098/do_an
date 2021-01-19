@@ -26,10 +26,10 @@ public class QuestionUtils {
                         BaseDTO nextObject = (BaseDTO) lessonAndQuiz.get(i + 1);
                         if (nextObject instanceof LessonDTO) {
                             nextLessonId = nextObject.getId();
-                            return new Long[]{nextLessonId, null};
+                            return new Long[]{nextLessonId, null, (long) ((i + 1) * 100 / lessonAndQuiz.size())};
                         } else if (nextObject instanceof QuizDTO) {
                             nextQuizId = nextObject.getId();
-                            return new Long[]{null, nextQuizId};
+                            return new Long[]{null, nextQuizId, (long) ((i + 1) * 100 / lessonAndQuiz.size())};
                         }
                     }
                 }
@@ -39,12 +39,12 @@ public class QuestionUtils {
                         BaseDTO nextObject = (BaseDTO) lessonAndQuiz.get(i + 1);
                         if (nextObject instanceof LessonDTO) {
                             nextLessonId = nextObject.getId();
-                            return new Long[]{nextLessonId, null};
+                            return new Long[]{nextLessonId, null, (long) ((i + 1) * 100 / lessonAndQuiz.size())};
                         }
                     }
                 }
             }
         }
-        return new Long[]{currentLessonId, currentQuizId};
+        return new Long[]{currentLessonId, currentQuizId, 100L};
     }
 }

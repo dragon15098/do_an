@@ -2,9 +2,6 @@ package com.example.demo.service.impl;
 
 import com.example.demo.service.FileService;
 import lombok.RequiredArgsConstructor;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.Java2DFrameConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -15,10 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.activation.MimetypesFileTypeMap;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -69,41 +63,30 @@ public class FileServiceImpl implements FileService {
     @Override
     public String uploadFile(MultipartFile file) {
         if (file.getOriginalFilename() != null) {
-            Path path = fileStorageLocation.resolve(file.getOriginalFilename());
-            try {
-                Files.createDirectories(fileStorageLocation);
-                file.transferTo(path.toFile());
-            } catch (IOException e) {
-                System.out.println(e.getMessage());
-                throw new RuntimeException("Problemas na tentativa de salvar file.", e);
+
+            String[] split = file.getOriginalFilename().split("\\.");
+            String s = split[split.length - 1];
+            if (s.equals("mp4")) {
+                try {
+                    Path path = fileStorageLocation.resolve(file.getOriginalFilename());
+                    Files.createDirectories(fileStorageLocation);
+                    file.transferTo(path.toFile());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    Path imageFolderPath = Paths.get("F:\\Resource\\image").toAbsolutePath().normalize();
+                    Path imagePath = imageFolderPath.resolve(file.getOriginalFilename());
+                    Files.createDirectories(imagePath);
+                    file.transferTo(imagePath.toFile());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            String originalFilename = file.getOriginalFilename();
-            try {
-                extractFileFrame(originalFilename);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return originalFilename;
+            return file.getOriginalFilename();
         }
         return "";
-    }
-
-    private void extractFileFrame(String originalFilename) throws IOException {
-//        FFmpegFrameGrabber g = new FFmpegFrameGrabber(this.filePath + "\\" + originalFilename);
-//        String imageFileName = originalFilename.split("\\.")[0] + ".jpg";
-//        try {
-//            g.start();
-//            for (int i = 0; i < 50; i++) {
-//                Frame frame = g.grab();
-//                BufferedImage bufferedImage = new Java2DFrameConverter().convert(frame);
-//                File outputFile = new File("F:\\Resource\\image\\" + imageFileName);
-//                ImageIO.write(bufferedImage, "jpg", outputFile);
-//            }
-//        } catch (Exception ignored) {
-//
-//        } finally {
-//            g.stop();
-//        }
     }
 
     @Override

@@ -65,6 +65,6 @@ public interface UserCourseRepository extends JpaRepository<UserCourse, Long>, J
             "uc.courseRating as courseRating " +
             "FROM UserCourse uc " +
             "         JOIN User u ON u.id = uc.userId " +
-            "WHERE uc.courseId= :userCourseId")
+            "WHERE uc.courseId= :userCourseId AND uc.courseComment IS NOT NULL" )
     List<Tuple> getUserComments(@Param("userCourseId") Long userCourseId);
 }

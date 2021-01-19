@@ -15,4 +15,6 @@ public interface LessonQuestionService {
     LessonQuestionDTO insertOrUpdate(LessonQuestionDTO lessonQuestionDTO);
 
     List<LessonQuestionDTO> insertOrUpdate(List<LessonQuestionDTO> lessonQuestionDTOs);
+
+    void deleteLessonQuestionById(Long id);
 }

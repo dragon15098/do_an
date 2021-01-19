@@ -12,4 +12,6 @@ public interface LessonAnswerService {
     LessonAnswerDTO insertOrUpdate(LessonAnswerDTO lessonAnswerDTO);
 
     List<LessonAnswerDTO> insertOrUpdate(List<LessonAnswerDTO> lessonAnswerDTOs);
+
+    void deleteAnswerByQuestionId(Long questionId);
 }
