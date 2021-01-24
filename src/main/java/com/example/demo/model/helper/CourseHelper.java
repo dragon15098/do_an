@@ -15,7 +15,9 @@ public class CourseHelper {
         course.setId(courseDTO.getId());
         course.setTitle(courseDTO.getTitle());
         course.setImageDescriptionLink(courseDTO.getImageDescriptionLink());
-        course.setInstructorId(courseDTO.getInstructor().getId());
+        if(courseDTO.getInstructor()!=null){
+            course.setInstructorId(courseDTO.getInstructor().getId());
+        }
         course.setCategoryId(courseDTO.getCategory().getId());
         course.setDescription(courseDTO.getDescription());
         return course;

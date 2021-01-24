@@ -45,7 +45,7 @@ public class QuizServiceImpl implements QuizService {
         // get correct answer from database
         List<QuizQuestionDTO> questions = quizQuestionService.getQuizQuestionWithCorrectAnswer(quizId);
         boolean passQuiz = checkUserAnswers(questions, currentAnswers);
-        answerResultDTO.setQuizQuestions(questions);
+
         if (passQuiz) {
             UserCourseDTO userCourseDTO = userCourseRepository.getUserCourseById(userCourseId).stream().map(tuple -> {
                 UserCourseDTO userCourse = new UserCourseDTO();
@@ -69,10 +69,11 @@ public class QuizServiceImpl implements QuizService {
             if (userCourseDTO.getCurrentQuiz().getId() != null &&
                     userCourseDTO.getCurrentQuiz().getId().equals(quizId)) {
                 goToNextLesson(answerResultDTO, userCourseDTO);
-                answerResultDTO.setNextLessonId(userCourseDTO.getCurrentLesson().getId());
-                answerResultDTO.setNextQuizId(userCourseDTO.getCurrentQuiz().getId());
             }
+            answerResultDTO.setNextLessonId(userCourseDTO.getCurrentLesson().getId());
+            answerResultDTO.setNextQuizId(userCourseDTO.getCurrentQuiz().getId());
         }
+        answerResultDTO.setQuizQuestions(questions);
         return answerResultDTO;
     }
 

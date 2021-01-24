@@ -2,7 +2,6 @@ package com.example.demo.service.impl;
 
 import com.example.demo.service.FileService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -26,22 +25,12 @@ import static com.example.demo.configuration.Constants.*;
 @Service
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
-    private final Path fileStorageLocation;
-
-    @Autowired
-    public FileServiceImpl() {
-        this.fileStorageLocation = Paths.get("F:\\Resource").toAbsolutePath().normalize();
-        System.out.println(this.fileStorageLocation);
-        try {
-            Files.createDirectories(this.fileStorageLocation);
-        } catch (Exception ignored) {
-        }
-    }
 
     @Override
     public Resource loadFileAsResource(String fileName) {
         try {
-            Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+            Path videoFolderPath = Paths.get("F:\\Resource").toAbsolutePath().normalize();
+            Path filePath = videoFolderPath.resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists()) {
                 return resource;
@@ -68,8 +57,9 @@ public class FileServiceImpl implements FileService {
             String s = split[split.length - 1];
             if (s.equals("mp4")) {
                 try {
-                    Path path = fileStorageLocation.resolve(file.getOriginalFilename());
-                    Files.createDirectories(fileStorageLocation);
+                    Path videoFolderPath = Paths.get("F:\\Resource\\video").toAbsolutePath().normalize();
+                    Path path = videoFolderPath.resolve(file.getOriginalFilename());
+                    Files.createDirectories(videoFolderPath);
                     file.transferTo(path.toFile());
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.Tuple;
@@ -62,6 +64,9 @@ public class CourseServiceImpl implements CourseService {
         CourseHelper courseHelper = new CourseHelper(courseDTO);
         Course course = courseHelper.courseDTOToCourse();
         if (course.getId() == null) {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            Long userId = Long.parseLong(auth.getPrincipal().toString());
+            course.setInstructorId(userId);
             course.setStatus(Course.CourseStatus.WAIT);
             course.setCreateTime(new Date());
             course.setPrice(0F);

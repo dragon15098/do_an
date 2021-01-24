@@ -27,4 +27,5 @@ public class CourseDTO extends BaseDTO {
     private Course.CourseStatus status;
     private List<SectionDTO> sections;
     private Float price;
+    private String instructorName;
 }

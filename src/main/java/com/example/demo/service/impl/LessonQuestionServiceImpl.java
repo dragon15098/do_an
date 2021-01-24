@@ -101,9 +101,9 @@ public class LessonQuestionServiceImpl implements LessonQuestionService {
             }).findFirst().orElse(new UserCourseDTO());
             if (userCourseDTO.getCurrentLesson().getId() != null && userCourseDTO.getCurrentLesson().getId().equals(lessonId)) {
                 goToNextLesson(userCourseDTO);
-                answerResult.setNextLessonId(userCourseDTO.getCurrentLesson().getId());
-                answerResult.setNextQuizId(userCourseDTO.getCurrentQuiz().getId());
             }
+            answerResult.setNextLessonId(userCourseDTO.getCurrentLesson().getId());
+            answerResult.setNextQuizId(userCourseDTO.getCurrentQuiz().getId());
         }
 
         // set result for response
